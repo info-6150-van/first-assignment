@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - ElectronicsHub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="activity-tracker.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container nav-container">
+                <a href="index.html" class="logo">ElectronicsHub</a>
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="electronicsproducts.html">Electronics</a>
+                    <a href="cart.html" class="cart-icon">
+                        Cart
+                        <span class="cart-count">0</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>Shopping Cart</h1>
+        <div id="cart-content">
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="cart-items">
+                    <!-- Cart items will be dynamically inserted here -->
+                </tbody>
+            </table>
+            <div id="cart-summary">
+                <h3>Total: $<span id="cart-total">0.00</span></h3>
+            </div>
+        </div>
+
+        <form id="checkout-form" class="cart-form">
+            <h2>Checkout Information</h2>
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Shipping Address</label>
+                <textarea id="address" name="address" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Place Order</button>
+        </form>
+    </main>
+
+    <!-- IMPORTANT: Load scripts in correct order -->
+    <script src="cart.js"></script>
+    <script src="activity-tracker.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            displayCart();
+        });
+
+        function displayCart() {
+            const cartItems = cart.getCart();
+            const tbody = document.getElementById('cart-items');
+            const total = document.getElementById('cart-total');
+            
+            tbody.innerHTML = '';
+            
+            cartItems.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <img src="${item.image}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover;">
+                            <span>${item.name}</span>
+                        </div>
+                    </td>
+                    <td>$${item.price.toFixed(2)}</td>
+                    <td>
+                        <input type="number" value="${item.quantity}" min="0" 
+                            onchange="updateQuantity('${item.id}', this.value)">
+                    </td>
+                    <td>$${(item.price * item.quantity).toFixed(2)}</td>
+                    <td>
+                        <button class="btn btn-secondary" onclick="removeItem('${item.id}')">Remove</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            total.textContent = cart.getTotal().toFixed(2);
+        }
+
+        function updateQuantity(productId, quantity) {
+            cart.updateQuantity(productId, quantity);
+            displayCart();
+        }
+
+        function removeItem(productId) {
+            cart.removeFromCart(productId);
+            displayCart();
+        }
+
+        document.getElementById('checkout-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (cart.getCart().length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            
+            alert('Order placed successfully! This is a demo, so no actual order is processed.');
+            cart.clearCart();
+            displayCart();
+        });
+    </script>
+</body>
+</html>
