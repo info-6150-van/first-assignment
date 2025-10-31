@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Wireless Headphones - ElectronicsHub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="activity-tracker.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="container nav-container">
+                <a href="index.html" class="logo">ElectronicsHub</a>
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="electronicsproducts.html">Electronics</a>
+                    <a href="cart.html" class="cart-icon">
+                        Cart
+                        <span class="cart-count">0</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="product-detail">
+            <div class="product-images">
+                <div class="main-image-container">
+                    <img src="https://m.media-amazon.com/images/I/612TMuDXB0L._AC_SL1500_.jpg" alt="Premium Wireless Headphones" id="main-product-image">
+                </div>
+                <div class="thumbnail-images">
+                    <img src="https://m.media-amazon.com/images/I/71D587Bk3XL._AC_SL1500_.jpg" alt="Front view" onclick="changeImage(this.src)">
+                    <img src="https://m.media-amazon.com/images/I/71bAfN41FrL._AC_SL1500_.jpg" alt="Details" onclick="changeImage(this.src)">
+                </div>
+            </div>
+            <div class="product-detail-info">
+                <h1>Premium Wireless Headphones</h1>
+                <div class="product-meta">
+                    <p class="product-price">$99.99</p>
+                    <div class="product-rating">
+                        <span class="stars">★★★★★</span>
+                        <span class="rating-count">(128 reviews)</span>
+                    </div>
+                </div>
+                <div class="product-actions">
+                    <div class="quantity-selector">
+                        <button onclick="updateQuantity(-1)">-</button>
+                        <input type="number" id="quantity" value="1" min="1" max="10">
+                        <button onclick="updateQuantity(1)">+</button>
+                    </div>
+                    <button class="btn btn-primary" onclick="addToCartHandler()">
+                        Add to Cart
+                    </button>
+                    <button class="btn btn-secondary favorite-btn" onclick="toggleFavorite(this)">
+                        ♡
+                    </button>
+                </div>
+                <div class="product-delivery">
+                    <p>✓ Free Shipping</p>
+                    <p>✓ 90-Day Returns</p>
+                    <p>✓ 4-Years Warranty</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="product-tabs">
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="switchTab('description')">Description</button>
+                <button class="tab-btn" onclick="switchTab('specifications')">Specifications</button>
+                <button class="tab-btn" onclick="switchTab('reviews')">Reviews</button>
+            </div>
+            <div class="tabs-content">
+                <div id="description" class="tab-content active">
+                    <h2>Product Description</h2>
+                    <p>Experience unparalleled sound quality with our Premium Wireless Headphones. These headphones combine cutting-edge technology with premium comfort to deliver an exceptional listening experience.</p>
+                    <ul class="feature-list">
+                        <li>
+                            <span class="feature-icon">🎵</span>
+                            <div class="feature-text">
+                                <h3>Superior Sound Quality</h3>
+                                <p>40mm dynamic drivers deliver crystal clear audio across all frequencies.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="feature-icon">🔇</span>
+                            <div class="feature-text">
+                                <h3>Active Noise Cancellation</h3>
+                                <p>Advanced ANC technology blocks out unwanted ambient noise.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="feature-icon">🔋</span>
+                            <div class="feature-text">
+                                <h3>Long Battery Life</h3>
+                                <p>Up to 40 hours of playback time with ANC enabled.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="feature-icon">☁️</span>
+                            <div class="feature-text">
+                                <h3>Premium Comfort</h3>
+                                <p>Memory foam ear cushions and adjustable headband for extended wear.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div id="specifications" class="tab-content">
+                    <h2>Technical Specifications</h2>
+                    <table class="specs-table">
+                        <tr>
+                            <td>Driver Size</td>
+                            <td>40mm Dynamic Drivers</td>
+                        </tr>
+                        <tr>
+                            <td>Frequency Response</td>
+                            <td>20Hz - 20kHz</td>
+                        </tr>
+                        <tr>
+                            <td>Battery Life</td>
+                            <td>40 hours (ANC on)</td>
+                        </tr>
+                        <tr>
+                            <td>Charging Time</td>
+                            <td>2 hours</td>
+                        </tr>
+                        <tr>
+                            <td>Bluetooth Version</td>
+                            <td>5.0</td>
+                        </tr>
+                        <tr>
+                            <td>Noise Cancellation</td>
+                            <td>Hybrid ANC</td>
+                        </tr>
+                        <tr>
+                            <td>Weight</td>
+                            <td>250g</td>
+                        </tr>
+                        <tr>
+                            <td>Water Resistance</td>
+                            <td>IPX4</td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="reviews" class="tab-content">
+                    <h2>Customer Reviews</h2>
+                    <div class="review-summary">
+                        <div class="rating-chart">
+                            <div class="average-rating">
+                                <span class="big-rating">4.8</span>
+                                <div class="stars">★★★★★</div>
+                                <span>Based on 128 reviews</span>
+                            </div>
+                            <div class="rating-bars">
+                                <div class="rating-bar">
+                                    <span>5 ★</span>
+                                    <div class="bar"><div style="width: 80%"></div></div>
+                                    <span>102</span>
+                                </div>
+                                <div class="rating-bar">
+                                    <span>4 ★</span>
+                                    <div class="bar"><div style="width: 15%"></div></div>
+                                    <span>19</span>
+                                </div>
+                                <div class="rating-bar">
+                                    <span>3 ★</span>
+                                    <div class="bar"><div style="width: 3%"></div></div>
+                                    <span>4</span>
+                                </div>
+                                <div class="rating-bar">
+                                    <span>2 ★</span>
+                                    <div class="bar"><div style="width: 1%"></div></div>
+                                    <span>2</span>
+                                </div>
+                                <div class="rating-bar">
+                                    <span>1 ★</span>
+                                    <div class="bar"><div style="width: 1%"></div></div>
+                                    <span>1</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="reviews-list">
+                        <div class="review">
+                            <div class="review-header">
+                                <div class="reviewer-info">
+                                    <span class="reviewer-name">John D.</span>
+                                    <div class="stars">★★★★★</div>
+                                </div>
+                                <span class="review-date">2024-01-15</span>
+                            </div>
+                            <p class="review-text">Exceptional sound quality and the noise cancellation is truly impressive. Battery life exceeds expectations!</p>
+                        </div>
+                        <div class="review">
+                            <div class="review-header">
+                                <div class="reviewer-info">
+                                    <span class="reviewer-name">Sarah M.</span>
+                                    <div class="stars">★★★★★</div>
+                                </div>
+                                <span class="review-date">2024-01-10</span>
+                            </div>
+                            <p class="review-text">Very comfortable for long listening sessions. The sound quality is fantastic and the build quality feels premium.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- IMPORTANT: Load scripts in correct order -->
+    <script src="cart.js"></script>
+    <script src="activity-tracker.js"></script>
+    <script>
+        function changeImage(src) {
+            document.getElementById('main-product-image').src = src;
+        }
+
+        function switchTab(tabId) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab
+            document.querySelector(`.tab-btn[onclick*="${tabId}"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function updateQuantity(change) {
+            const input = document.getElementById('quantity');
+            let value = parseInt(input.value) + change;
+            value = Math.max(1, Math.min(10, value)); // Limit between 1 and 10
+            input.value = value;
+        }
+
+        function toggleFavorite(btn) {
+            btn.classList.toggle('active');
+            btn.textContent = btn.classList.contains('active') ? '♥' : '♡';
+            showNotification(btn.classList.contains('active') ? 
+                'Added to favorites!' : 'Removed from favorites');
+        }
+
+        function addToCartHandler() {
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const product = {
+                id: 'product1',
+                name: 'Premium Wireless Headphones',
+                price: 99.99,
+                image: 'https://m.media-amazon.com/images/I/612TMuDXB0L._AC_SL1500_.jpg',
+                quantity: quantity
+            };
+            
+            cart.addToCart(product);
+            showNotification(`Added ${quantity} ${quantity > 1 ? 'items' : 'item'} to cart!`);
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

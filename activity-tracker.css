@@ -1,0 +1,269 @@
+/*
+ * activity-tracker.css
+ * Required styles for the Activity Tracker Widget
+ */
+
+/* =========================================================================
+ * CORE WIDGET CONTAINER AND TOGGLE
+ * ========================================================================= */
+
+.activity-tracker-widget {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    z-index: 9999;
+}
+
+.activity-tracker-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #a4c724 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s;
+    z-index: 10000;
+}
+
+.activity-tracker-button:hover {
+    transform: scale(1.1);
+}
+
+.activity-tracker-timeline {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 400px;
+    height: 100vh;
+    background: #ffffff;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s ease-in-out;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+}
+
+/* MANDATORY: This class toggles the timeline visibility */
+.activity-tracker-timeline.expanded {
+    right: 0;
+}
+
+/* =========================================================================
+ * MANDATORY SCROLLING AND CONTENT STRUCTURE
+ * ========================================================================= */
+
+/* REQUIRED: Must have these exact properties for compliance */
+.timeline-content {
+    overflow-y: auto;
+    max-height: 350px;
+    flex: 1;
+    padding: 20px;
+    background: #f8f9fa;
+}
+
+.timeline-wrapper {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline-wrapper::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+}
+
+/* =========================================================================
+ * TIMELINE ITEM STYLES (MANDATORY CLASSES)
+ * ========================================================================= */
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+/* MANDATORY: Visual marker for page view events */
+.timeline-item.pageview::before {
+    content: '📄';
+    position: absolute;
+    left: -38px;
+    top: 15px;
+    width: 20px;
+    height: 20px;
+    background: #667eea;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    border: 3px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* MANDATORY: Visual marker for interaction events */
+.timeline-item.interaction::before {
+    content: '👆';
+    position: absolute;
+    left: -38px;
+    top: 15px;
+    width: 20px;
+    height: 20px;
+    background: #764ba2;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    border: 3px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Timeline item content */
+.timeline-item .time {
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 5px;
+}
+
+.timeline-item .event-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1f2937;
+    margin-bottom: 5px;
+}
+
+.timeline-item .event-details {
+    font-size: 13px;
+    color: #4b5563;
+}
+
+/* =========================================================================
+ * HEADER AND STATS STYLES (MANDATORY STRUCTURE)
+ * ========================================================================= */
+
+.timeline-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    position: relative;
+}
+
+.timeline-header h3 {
+    margin: 0 0 10px 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.timeline-header > div {
+    font-size: 12px;
+    opacity: 0.9;
+    line-height: 1.8;
+}
+
+.timeline-close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.timeline-close-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* MANDATORY: Session stats container */
+.session-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 20px;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* MANDATORY: Individual stat elements */
+.session-stats .stat {
+    text-align: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.session-stats .stat-label {
+    display: block;
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 5px;
+}
+
+.session-stats .stat-value {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    color: #667eea;
+}
+
+/* =========================================================================
+ * RESPONSIVE DESIGN
+ * ========================================================================= */
+
+@media (max-width: 768px) {
+    .activity-tracker-timeline {
+        width: 100%;
+        right: -100%;
+    }
+    
+    .activity-tracker-timeline.expanded {
+        right: 0;
+    }
+}
+
+/* =========================================================================
+ * UTILITY CLASSES
+ * ========================================================================= */
+
+.timeline-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6b7280;
+}
+
+/* Scrollbar styling */
+.timeline-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.timeline-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.timeline-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.timeline-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
