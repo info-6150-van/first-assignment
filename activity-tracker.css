@@ -1,1 +1,70 @@
 /* Implement your styles here */
+.activity-tracker-widget {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 99;
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 22rem;
+  max-height: 80vh;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.12);
+  font-size: 0.85rem;
+}
+
+.widget-timeline {
+  overflow-y: auto;
+  max-height: 400px;
+  padding: 0.5rem;
+}
+
+.widget-timeline ul {
+  margin: 0;
+  padding: 0;
+}
+
+.activity-tracker-event {
+  list-style: none;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+}
+
+
+
+.event-body {
+  display: flex;
+  align-items: center;
+  gap: 8rem;
+  font-size: 0.85rem;
+}
+
+.event-time {
+  font-size: 0.75rem;
+  color: #999;
+  margin-bottom: 2rem;
+}
+
+.event-type {
+  font-weight: bold;
+  font-size: 0.7rem;
+  border-radius: 4rem;
+  text-transform: uppercase;
+  background: #e0e0e0;
+  color: #333;
+}
+
+.event-details { flex: 1; color: #333; }
+
+.event-page {
+  font-size: 0.75rem;
+  color: #999;
+  font-style: italic;
+  white-space: nowrap;
+}

@@ -1,6 +1,6 @@
 const STORAGE_KEY = 'activity-tracker-data';
 const MAX_EVENTS = 100;
-const MAX_TIMELINE_DISPLAY = 10;
+const MAX_TIMELINE_DISPLAY = 20;
 
 class ActivityTracker {
     constructor(options = {}) {
@@ -200,7 +200,7 @@ class ActivityTracker {
         page.className = 'event-page';
         page.textContent = event.page || '';
 
-        li.append(time, type, details, page);
+        li.append(type, details, page, time);
         return li;
     }
 
