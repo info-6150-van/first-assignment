@@ -1,7 +1,9 @@
 class ActivityTracker {
     // IMPLEMENT YOUR CODE HERE
     constructor() {
+        // Create storage keys
         this.storageKey = "activity-tracker-data";
+        this.panelStateKey = "activity-tracker-panel-open";
 
         // Load from localStorage or create new session
         this.data = this._load();
@@ -149,6 +151,11 @@ class ActivityTracker {
     _togglePanel() {
         const hidden = this.panel.classList.toggle("at-hidden");
         this.toggleBtn.setAttribute("aria-expanded", String(!hidden));
+        try {
+            localStorage.setItem(this.panelStateKey, String(!hidden));
+        } catch (e) {
+            console.warn("Failed to save panel state:", e);
+        }
     }
 
     // Function for clearing session stats when the clear button is clicked //
@@ -165,13 +172,28 @@ class ActivityTracker {
     // Function for building the widget that displays the session info //
     // Heavily uses the html element creation function to avoid innerHTML //
     _buildWidget() {
+        // Remove any existing widget
+        const existing = document.querySelector(".at-widget");
+        if (existing) {
+            existing.remove();
+        }
+
         const container = this._el("div", "at-widget");
 
         this.toggleBtn = this._el("button", "at-toggle-btn", "Activity Tracker");
-        this.toggleBtn.setAttribute("aria-expanded", "false");
+
+        // Restore panel open/closed state from localStorage
+        let panelOpen = false;
+        try {
+            panelOpen = localStorage.getItem(this.panelStateKey) === "true";
+        } catch (e) {
+            // Ignore errors reading panel state
+        }
+
+        this.toggleBtn.setAttribute("aria-expanded", String(panelOpen));
         container.appendChild(this.toggleBtn);
 
-        this.panel = this._el("div", "at-panel at-hidden");
+        this.panel = this._el("div", panelOpen ? "at-panel" : "at-panel at-hidden");
 
         this.statsEl = this._el("div", "at-stats");
         this.sessionIdEl = this._el("p", "at-session-id");
