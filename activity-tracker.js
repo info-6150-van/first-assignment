@@ -1,6 +1,11 @@
 class ActivityTracker {
     // IMPLEMENT YOUR CODE HERE
     constructor() {
+        // Prevent duplicate initialization; return existing instance
+        if (window._activityTrackerInstance) {
+            return window._activityTrackerInstance;
+        }
+
         // Create storage keys
         this.storageKey = "activity-tracker-data";
         this.panelStateKey = "activity-tracker-panel-open";
@@ -17,6 +22,12 @@ class ActivityTracker {
 
         // Attach event listeners
         this._attachListeners();
+
+        // Remove any external debug controls that may conflict with the built-in widget
+        this._removeExternalDebugControls();
+
+        // Store instance for singleton pattern
+        window._activityTrackerInstance = this;
     }
 
     // Function for generating session ID using current time //
@@ -238,6 +249,25 @@ class ActivityTracker {
         this.exportBtn.addEventListener("click", () => this._exportToJson());
     }
 
+    // Function for removing external debug control panels that conflict with the built-in widget //
+    _removeExternalDebugControls() {
+        const observer = new MutationObserver(() => {
+            const debugEl = document.querySelector(".debug-controls");
+            if (debugEl) {
+                debugEl.remove();
+                observer.disconnect();
+            }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        // Also remove immediately if it already exists
+        const existing = document.querySelector(".debug-controls");
+        if (existing) {
+            existing.remove();
+            observer.disconnect();
+        }
+    }
+
     // Function for attaching event listeners, with event delegation to optimize performance //
     _attachListeners() {
         document.addEventListener("click", (e) => {
@@ -282,4 +312,8 @@ if (typeof module !== "undefined" && module.exports) {
     window.ActivityTracker = ActivityTracker;
 }
 
-document.addEventListener("DOMContentLoaded", () => new ActivityTracker());
+document.addEventListener("DOMContentLoaded", () => {
+    if (!window._activityTrackerInstance) {
+        new ActivityTracker();
+    }
+});
