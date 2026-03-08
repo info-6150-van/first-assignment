@@ -20,7 +20,7 @@ Below are the list of bugs with the discovery dates, and status of whether they 
 
 - **2026-03-07 Medium Bug - Excessive Session Log Info (Fixed 2026-03-07):** The session tracker's file structure in local storage contains unnecessary information which may cause performance issues. Update: Not the code's fault, see the debugging instruction for details.
 
-- **2026-03-07 Major Bug - Duplicate Broken Popup In Product Page (In Progress):** In `product1.html` there is a separate activity tracker that is popping up, which is not connected to the actual widget.
+- **2026-03-07 Major Bug - Duplicate Broken Popup In Product Page (Fixed 2026-03-08):** In `product1.html` there is a separate activity tracker that is popping up, which is not connected to the actual widget.
 
 ## Debugging Instruction
 
