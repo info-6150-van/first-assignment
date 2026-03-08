@@ -169,6 +169,28 @@ class ActivityTracker {
         this._recordEvent("pageview", { page: this._getPageName() });
     }
 
+    // Function for exporting session data as a JSON file download //
+    _exportToJson() {
+        const exportData = {
+            sessionId: this.data.sessionId,
+            startedAt: this.data.startedAt,
+            exportedAt: Date.now(),
+            stats: this._getStats(),
+            events: this.data.events
+        };
+        const json = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${this.data.sessionId}.json`;
+        a.className = "at-export-download";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
     // Function for building the widget that displays the session info //
     // Heavily uses the html element creation function to avoid innerHTML //
     _buildWidget() {
@@ -200,17 +222,20 @@ class ActivityTracker {
         this.timelineEl = document.createElement("ul");
         this.timelineEl.className = "at-timeline";
         this.clearBtn = this._el("button", "at-clear-btn", "Clear Session");
+        this.exportBtn = this._el("button", "at-export-btn", "Export JSON");
 
         this.panel.appendChild(this.statsEl);
         this.panel.appendChild(this.sessionIdEl);
         this.panel.appendChild(this.timelineEl);
         this.panel.appendChild(this.clearBtn);
+        this.panel.appendChild(this.exportBtn);
 
         container.appendChild(this.panel);
         document.body.appendChild(container);
 
         this.toggleBtn.addEventListener("click", () => this._togglePanel());
         this.clearBtn.addEventListener("click", () => this._clearSession());
+        this.exportBtn.addEventListener("click", () => this._exportToJson());
     }
 
     // Function for attaching event listeners, with event delegation to optimize performance //
@@ -218,6 +243,9 @@ class ActivityTracker {
         document.addEventListener("click", (e) => {
             const el = e.target;
             if (el.closest(".at-widget")) {
+                return;
+            }
+            if (el.classList.contains("at-export-download")) {
                 return;
             }
             const tag = el.tagName.toLowerCase();

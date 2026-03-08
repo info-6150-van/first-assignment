@@ -128,3 +128,16 @@
 .at-clear-btn:hover {
   background: #ddd;
 }
+
+.at-export-btn {
+  margin-top: 8px;
+  padding: 4px 10px;
+  background: #eee;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.at-export-btn:hover {
+  background: #ddd;
+}
