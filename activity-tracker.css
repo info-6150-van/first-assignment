@@ -1,1 +1,130 @@
 /* Implement your styles here */
+.at-widget {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 99;
+  font-size: 14px;
+  color: #222;
+  max-width: 360px;
+  width: 100%;
+}
+
+.at-toggle-btn {
+  display: block;
+  margin-left: auto;
+  padding: 8px 14px;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.at-toggle-btn:hover {
+  background: #555;
+}
+
+.at-panel {
+  margin-top: 6px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.at-hidden {
+  display: none;
+}
+
+.at-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.at-stat {
+  background: #f0f0f0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.at-session-id {
+  font-size: 11px;
+  color: #888;
+  margin: 0 0 10px;
+  word-break: break-all;
+}
+
+.at-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-left: 2px solid #ddd;
+}
+
+.at-event {
+  position: relative;
+  padding: 6px 10px 6px 18px;
+  margin-bottom: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.at-event::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #999;
+}
+
+.at-event--pageview::before {
+  background: #4a90d9;
+}
+
+.at-event--click::before {
+  background: #e07b39;
+}
+
+.at-event--formsubmit::before {
+  background: #5cb85c;
+}
+
+.at-event-type {
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-right: 6px;
+}
+
+.at-event-detail {
+  color: #555;
+  margin-right: 6px;
+}
+
+.at-event-time {
+  color: #aaa;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.at-clear-btn {
+  margin-top: 8px;
+  padding: 4px 10px;
+  background: #eee;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.at-clear-btn:hover {
+  background: #ddd;
+}
