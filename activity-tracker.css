@@ -1,131 +1,151 @@
 /* Implement your styles here */
 .at-widget {
-  position: fixed;
-  bottom: 20px;
-  left: 10px;
-  z-index: 1000;
-  font-size: 14px;
-  color: #333333;
-  max-width: 360px;
-  width: 100%;
+    position: fixed;
+    bottom: 20px;
+    left: 10px;
+    z-index: 1000;
+    font-size: 14px;
+    color: #333333;
+    max-width: 360px;
+    width: 100%;
 }
 
 .at-toggle-btn {
-  display: block;
-  padding: 8px 14px;
-  background: #333333;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  font-size: 13px;
+    display: block;
+    padding: 8px 14px;
+    background: #333333;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
 }
 
 .at-toggle-btn:hover {
-  background: #555555;
+    background: #555555;
 }
 
 .at-panel {
-  margin-top: 6px;
-  background: #333333;
-  border-radius: 8px;
-  padding: 12px;
-  max-height: 400px;
-  overflow-y: auto;
+    margin-top: 6px;
+    background: #333333;
+    border-radius: 8px;
+    padding: 12px;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 .at-hidden {
-  display: none;
+    display: none;
 }
 
 .at-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
 }
 
 .at-stat {
-  background: #333333;
-  color: #d8d8d8;
-  padding: 4px 8px;
-  border: 1px solid #d8d8d8;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 600;
+    background: #333333;
+    color: #d8d8d8;
+    padding: 4px 8px;
+    border: 1px solid #d8d8d8;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
 }
 
 .at-session-id {
-  font-size: 11px;
-  color: #d8d8d8;
-  margin: 0 0 10px;
-  word-break: break-all;
+    font-size: 11px;
+    color: #d8d8d8;
+    margin: 0 0 10px;
+    word-break: break-all;
 }
 
 .at-timeline {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border-left: 2px solid #d8d8d8;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 2px solid #d8d8d8;
 }
 
 .at-event {
-  position: relative;
-  color: #5695e8;
-  padding: 6px 10px 6px 18px;
-  margin-bottom: 4px;
-  font-size: 12px;
-  line-height: 1.4;
+    position: relative;
+    color: #5695e8;
+    padding: 6px 10px 6px 18px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    line-height: 1.4;
 }
 
 .at-event::before {
-  content: "";
-  position: absolute;
-  left: -5px;
-  top: 10px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #d8d8d8;
+    content: "";
+    position: absolute;
+    left: -5px;
+    top: 10px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #d8d8d8;
 }
 
 .at-event--pageview::before {
-  background: #4a90d9;
+    background: #4a90d9;
 }
 
 .at-event--click::before {
-  background: #e07b39;
+    background: #e07b39;
 }
 
 .at-event--formsubmit::before {
-  background: #5cb85c;
+    background: #5cb85c;
 }
 
 .at-event-type {
-  font-weight: 700;
-  text-transform: uppercase;
-  margin-right: 6px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-right: 6px;
 }
 
 .at-event-detail {
-  color: #d8d8d8;
-  margin-right: 6px;
+    color: #d8d8d8;
+    margin-right: 6px;
 }
 
 .at-event-time {
-  color: #d8d8d8;
-  font-size: 11px;
-  white-space: nowrap;
+    color: #d8d8d8;
+    font-size: 11px;
+    white-space: nowrap;
 }
 
 .widget-btn {
-  margin-top: 8px;
-  padding: 4px 10px;
-  background: #9b9b9b;
-  border: 1px solid #7f7f7f;
-  border-radius: 4px;
-  font-size: 12px;
+    margin-top: 8px;
+    padding: 4px 10px;
+    background: #9b9b9b;
+    border: 1px solid #7f7f7f;
+    border-radius: 4px;
+    font-size: 12px;
 }
 
 .widget-btn:hover {
-  background: rgb(240, 240, 240)
+    background: rgb(240, 240, 240);
+}
+
+.widget-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #007bff;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 900;
+}
+
+.widget-notification.show {
+    transform: translateY(0);
+    opacity: 1;
 }

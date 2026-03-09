@@ -1,32 +1,33 @@
 class ActivityTracker {
     // IMPLEMENT YOUR CODE HERE
     constructor() {
-        // Prevent duplicate initialization; return existing instance
+        // Prevent duplicate initialization; return existing instance //
         if (window._activityTrackerInstance) {
             return window._activityTrackerInstance;
         }
 
-        // Create storage keys
+        // Create storage keys //
         this.storageKey = "activity-tracker-data";
         this.panelStateKey = "activity-tracker-panel-open";
 
-        // Load from localStorage or create new session
+        // Load from localStorage or create new session //
         this.data = this._load();
 
-        // Record the initial preview without triggering render
+        // Record the initial preview without triggering render //
         this._recordInitialPageview();
 
-        // Build and render the widget
+        // Build and render the widget //
         this._buildWidget();
-        this._render();
+        this._renderWidget();
 
-        // Attach event listeners
+        // Attach event listeners //
         this._attachListeners();
 
-        // Remove any external debug controls that may conflict with the built-in widget
+        // Remove any external debug controls that may conflict with the widget //
+        // See the function comment for reasons //
         this._removeExternalDebugControls();
 
-        // Store instance for singleton pattern
+        // Store instance for singleton pattern //
         window._activityTrackerInstance = this;
     }
 
@@ -76,7 +77,7 @@ class ActivityTracker {
     }
 
     // Function for getting the session statistics //
-    _getStats() {
+    generateStatistics() {
         const evts = this.data.events;
         const pages = evts.filter(e => e.type === "pageview").length;
         const clicks = evts.filter(e => e.type === "click").length;
@@ -93,7 +94,7 @@ class ActivityTracker {
     }
 
     // Function for creating the html element with given tag, classname, and text content //
-    _el(tag, className, textContent) {
+    _createHTMLElementWithAttr(tag, className, textContent) {
         const el = document.createElement(tag);
         if (className) {
             el.className = className;
@@ -119,10 +120,10 @@ class ActivityTracker {
     }
 
     // Function for rendering the widget //
-    _render() {
-        const s = this._getStats();
+    _renderWidget() {
+        const s = this.generateStatistics();
 
-        // Rebuild stats
+        // Rebuild stats //
         this.statsEl.textContent = "";
         const statEntries = [
             `Pages: ${s.pages}`,
@@ -131,19 +132,19 @@ class ActivityTracker {
             `Duration: ${s.duration}s`
         ];
         for (const text of statEntries) {
-            this.statsEl.appendChild(this._el("span", "at-stat", text));
+            this.statsEl.appendChild(this._createHTMLElementWithAttr("span", "at-stat", text));
         }
 
         this.sessionIdEl.textContent = `Session: ${this.data.sessionId}`;
 
-        // Rebuild timeline
+        // Rebuild timeline //
         const frag = document.createDocumentFragment();
         const events = [...this.data.events].reverse();
         for (const evt of events) {
-            const li = this._el("li", `at-event at-event--${evt.type}`);
-            li.appendChild(this._el("span", "at-event-type", evt.type));
-            li.appendChild(this._el("span", "at-event-detail", this._describeEvent(evt)));
-            li.appendChild(this._el("span", "at-event-time", new Date(evt.time).toLocaleTimeString()));
+            const li = this._createHTMLElementWithAttr("li", `at-event at-event--${evt.type}`);
+            li.appendChild(this._createHTMLElementWithAttr("span", "at-event-type", evt.type));
+            li.appendChild(this._createHTMLElementWithAttr("span", "at-event-detail", this._describeEvent(evt)));
+            li.appendChild(this._createHTMLElementWithAttr("span", "at-event-time", new Date(evt.time).toLocaleTimeString()));
             frag.appendChild(li);
         }
         this.timelineEl.textContent = "";
@@ -155,11 +156,11 @@ class ActivityTracker {
         const evt = { type, time: Date.now(), ...details };
         this.data.events.push(evt);
         this._save();
-        this._render();
+        this._renderWidget();
     }
 
     // Function for toggling the session stats panel //
-    _togglePanel() {
+    togglePanel() {
         const hidden = this.panel.classList.toggle("at-hidden");
         this.toggleBtn.setAttribute("aria-expanded", String(!hidden));
         this.toggleBtn.textContent = hidden ? "Show Session Activity" : "Hide Session Activity";
@@ -173,7 +174,9 @@ class ActivityTracker {
     // Function for showing notification (directly taken from product1.html for consistent behaviors) //
     showNotification(message) {
             const notification = document.createElement('div');
-            notification.className = 'notification';
+            // only modified here so that the CSS style is confined to the activity tracker only //
+            // and to make that the notification does not overlap the info panel //
+            notification.className = 'widget-notification';
             notification.textContent = message;
             document.body.appendChild(notification);
 
@@ -188,7 +191,7 @@ class ActivityTracker {
         }
 
     // Function for clearing session stats when the clear button is clicked //
-    _clearSession() {
+    clearSession() {
         localStorage.removeItem(this.storageKey);
         // the panel toggle status is NOT reset by this //
         this.data = {
@@ -201,12 +204,12 @@ class ActivityTracker {
     }
 
     // Function for exporting session data as a JSON file download //
-    _exportToJson() {
+    exportToJSON() {
         const exportData = {
             sessionId: this.data.sessionId,
             startedAt: this.data.startedAt,
             exportedAt: Date.now(),
-            stats: this._getStats(),
+            stats: this.generateStatistics(),
             events: this.data.events
         };
         const json = JSON.stringify(exportData, null, 2);
@@ -224,37 +227,37 @@ class ActivityTracker {
     }
 
     // Function for building the widget that displays the session info //
-    // Heavily uses the html element creation function to avoid innerHTML //
+    // Heavily uses the _createHTMLElementWithAttr function to avoid innerHTML //
     _buildWidget() {
-        // Remove any existing widget
+        // Remove any existing widget //
         const existing = document.querySelector(".at-widget");
         if (existing) {
             existing.remove();
         }
 
-        const container = this._el("div", "at-widget");
+        const container = this._createHTMLElementWithAttr("div", "at-widget");
 
-        // Restore panel open/closed state from localStorage
+        // Restore panel open/closed state from localStorage //
         let panelOpen = false;
         try {
             panelOpen = localStorage.getItem(this.panelStateKey) === "true";
         } catch (e) {
-            // Ignore errors reading panel state
+            // Ignore errors reading panel state //
         }
 
-        this.toggleBtn = this._el("button", "at-toggle-btn", panelOpen ? "Hide Session Activity" : "Show Session Activity");
+        this.toggleBtn = this._createHTMLElementWithAttr("button", "at-toggle-btn", panelOpen ? "Hide Session Activity" : "Show Session Activity");
 
         this.toggleBtn.setAttribute("aria-expanded", String(panelOpen));
         container.appendChild(this.toggleBtn);
 
-        this.panel = this._el("div", panelOpen ? "at-panel" : "at-panel at-hidden");
+        this.panel = this._createHTMLElementWithAttr("div", panelOpen ? "at-panel" : "at-panel at-hidden");
 
-        this.statsEl = this._el("div", "at-stats");
-        this.sessionIdEl = this._el("p", "at-session-id");
+        this.statsEl = this._createHTMLElementWithAttr("div", "at-stats");
+        this.sessionIdEl = this._createHTMLElementWithAttr("p", "at-session-id");
         this.timelineEl = document.createElement("ul");
         this.timelineEl.className = "at-timeline";
-        this.clearBtn = this._el("button", "widget-btn", "Clear Data");
-        this.exportBtn = this._el("button", "widget-btn", "Export JSON");
+        this.clearBtn = this._createHTMLElementWithAttr("button", "widget-btn", "Clear Data");
+        this.exportBtn = this._createHTMLElementWithAttr("button", "widget-btn", "Export JSON");
 
         this.panel.appendChild(this.statsEl);
         this.panel.appendChild(this.sessionIdEl);
@@ -265,9 +268,9 @@ class ActivityTracker {
         container.appendChild(this.panel);
         document.body.appendChild(container);
 
-        this.toggleBtn.addEventListener("click", () => this._togglePanel());
-        this.clearBtn.addEventListener("click", () => this._clearSession());
-        this.exportBtn.addEventListener("click", () => this._exportToJson());
+        this.toggleBtn.addEventListener("click", () => this.togglePanel());
+        this.clearBtn.addEventListener("click", () => this.clearSession());
+        this.exportBtn.addEventListener("click", () => this.exportToJSON());
     }
 
     // Function for removing external debug control panels that conflict with the built-in widget //
@@ -283,7 +286,7 @@ class ActivityTracker {
         });
         observer.observe(document.body, { childList: true, subtree: true });
 
-        // Also remove immediately if it already exists
+        // Also remove immediately if it already exists //
         const existing = document.querySelector(".debug-controls");
         if (existing) {
             existing.remove();
@@ -318,7 +321,7 @@ class ActivityTracker {
 
         this._durationInterval = setInterval(() => {
             if (!this.panel.classList.contains("at-hidden")) {
-                const s = this._getStats();
+                const s = this.generateStatistics();
                 const durEl = this.statsEl.querySelector(".at-stat:last-child");
                 if (durEl) {
                     durEl.textContent = `Duration: ${s.duration}s`;
