@@ -27,6 +27,9 @@ class ActivityTracker {
         this._removeExternalDebugControls();
 
         // Store instance for singleton pattern //
+        // This goes against the 'create new instance' pattern seen in product1.html //
+        // But this allows multiple pages to share the same instance //
+        // and prevents accidental instance duplications //
         window._activityTrackerInstance = this;
     }
 
@@ -39,9 +42,9 @@ class ActivityTracker {
     // Function for loading from localStorage or create new session if none can be loaded //
     _load() {
         try {
-            const raw = localStorage.getItem(this.storageKey);
-            if (raw) {
-                const parsed = JSON.parse(raw);
+            const rawData = localStorage.getItem(this.storageKey);
+            if (rawData) {
+                const parsed = JSON.parse(rawData);
                 if (parsed && parsed.sessionId && Array.isArray(parsed.events)) {
                     return parsed;
                 }
@@ -75,7 +78,7 @@ class ActivityTracker {
         return parts[parts.length - 1] || "index.html";
     }
 
-    // Function for getting the session statistics //
+    // Function for generating the session statistics //
     generateStatistics() {
         const evts = this.data.events;
         const pages = evts.filter(e => e.type === "pageview").length;
@@ -86,6 +89,7 @@ class ActivityTracker {
     }
 
     // Function for recording the initial event without triggering render
+    // Part of a fix to prevent premature rendering and double logging of page view events //
     _recordInitialPageview() {
         const evt = { type: "pageview", time: Date.now(), page: this._getPageName() };
         this.data.events.push(evt);
@@ -93,15 +97,16 @@ class ActivityTracker {
     }
 
     // Function for creating the html element with given tag, classname, and text content //
+    // Used to avoid the usage of innerHTML //
     _createHTMLElementWithAttr(tag, className, textContent) {
-        const el = document.createElement(tag);
+        const newElement = document.createElement(tag);
         if (className) {
-            el.className = className;
+            newElement.className = className;
         }
         if (textContent != null) {
-            el.textContent = textContent;
+            newElement.textContent = textContent;
         }
-        return el;
+        return newElement;
     }
 
     // Function for describing a recorded event //
@@ -120,15 +125,15 @@ class ActivityTracker {
 
     // Function for rendering the widget //
     _renderWidget() {
-        const s = this.generateStatistics();
+        const stats = this.generateStatistics();
 
         // Rebuild stats //
         this.statsEl.textContent = "";
         const statEntries = [
-            `Pages: ${s.pages}`,
-            `Clicks: ${s.clicks}`,
-            `Forms: ${s.forms}`,
-            `Duration: ${s.duration}s`
+            `Pages: ${stats.pages}`,
+            `Clicks: ${stats.clicks}`,
+            `Forms: ${stats.forms}`,
+            `Duration: ${stats.duration}s`
         ];
         for (const text of statEntries) {
             this.statsEl.appendChild(this._createHTMLElementWithAttr("span", "widget-stat", text));
@@ -158,7 +163,7 @@ class ActivityTracker {
         this._renderWidget();
     }
 
-    // Function for toggling the session stats panel //
+    // Function for toggling the session stats panel and saving the toggle states to local storage //
     togglePanel() {
         const hidden = this.panel.classList.toggle("widget-hidden");
         this.toggleBtn.setAttribute("aria-expanded", String(!hidden));
