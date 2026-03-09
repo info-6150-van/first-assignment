@@ -1,1 +1,119 @@
 /* Implement your styles here */
+.activity-tracker-widget {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 99;
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 25rem;
+  max-height: 40vh;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.12);
+  font-size: 0.85rem;
+}
+
+.widget-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0.875rem;
+  background: #1e293b;
+  color: #f8fafc;
+  border-radius: 0.75rem 0.75rem 0 0;
+}
+
+.widget-header h3 {
+  margin: 0;
+  font-size: 0.875rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.widget-stats {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0.875rem;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  gap: 0.375rem;
+}
+
+
+.toggle-timeline-btn {
+  margin: 0.5rem 0.875rem;
+  padding: 0.3rem 0.625rem;
+  background: #1e293b;
+  color: #f8fafc;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+}
+
+.widget-timeline {
+  overflow-y: auto;
+  max-height: 400vh;
+  padding: 0.5rem;
+}
+
+.widget-timeline ul {
+  margin: 0;
+  padding: 0;
+}
+
+.activity-tracker-event {
+  list-style: none;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: flex-start;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+
+
+.event-body {
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+  font-size: 0.85rem;
+}
+
+.event-time {
+  font-size: 0.75rem;
+  color: #999;
+  margin-bottom: 2rem;
+}
+
+.event-type {
+  font-weight: bold;
+  font-size: 0.7rem;
+  border-radius: 4rem;
+  text-transform: uppercase;
+  background: #e0e0e0;
+  color: #333;
+}
+
+.event-details { 
+  flex: 1; 
+  color: #333; 
+  min-width: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.event-page {
+  font-size: 0.75rem;
+  color: #999;
+  font-style: italic;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
