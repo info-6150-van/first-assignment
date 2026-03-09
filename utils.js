@@ -25,10 +25,17 @@ export function formatTimestamp(time) {
 }
 
 /**
- * Get page label from current URL
- * @returns {string} Page label
+ * Get the current page name from URL
+ * @returns {string} Page name only
+ */
+export function getPageName() {
+    return window.location.pathname.split('/').pop() || 'index.html';
+}
+
+/**
+ * Get descriptive page label for pageview events
+ * @returns {string} Descriptive page label
  */
 export function getPageLabel() {
-    const pageName = window.location.pathname.split('/').pop() || 'index.html';
-    return `User viewed page "${pageName}"`;
+    return `User viewed page "${getPageName()}"`;
 }

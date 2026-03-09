@@ -1,6 +1,6 @@
 // Activity Tracker - Tracks user activity and displays statistics
 import { STORAGE_KEY, MAX_EVENTS, MAX_TIMELINE_DISPLAY } from './constants.js';
-import { formatDuration, formatTimestamp, getPageLabel } from './utils.js';
+import { formatDuration, formatTimestamp, getPageLabel, getPageName } from './utils.js';
 
 class ActivityTracker {
     constructor(options = {}) {
@@ -10,9 +10,11 @@ class ActivityTracker {
         this.maxEvents = options.maxEvents || MAX_EVENTS;
         this.data = this.loadSession();
         this.durationIntervalId = null;
+        this.persistTimer = null;
 
         this.widgetElements = null;
         this.renderWidget();
+        this.refreshWidget();
         this.attachEventListeners();
 
         this.recordEvent('pageview', getPageLabel());
@@ -21,12 +23,16 @@ class ActivityTracker {
         ActivityTracker.instance = this;
     }
 
-    persist() {
-        try{
-            localStorage.setItem(this.storageKey, JSON.stringify(this.data));
-        } catch (error){
-            console.error('Failed to persist session:', error);
-        }
+     persist() {
+        if (this._persistTimer) clearTimeout(this._persistTimer);
+        this._persistTimer = setTimeout(() => {
+            this._persistTimer = null;
+            try {
+                localStorage.setItem(this.storageKey, JSON.stringify(this.data));
+            } catch (error) {
+                console.error('Failed to persist session:', error);
+            }
+        });
     }
 
     //Session Managers
@@ -82,12 +88,13 @@ class ActivityTracker {
     
  
     recordEvent(type, details) {
-        this.data.events.push({
+        const event = {
             type,
             details,
-            page: getPageLabel(),
+            page: getPageName(),
             timestamp: Date.now()
-        });
+        }
+        this.data.events.push(event);
         
         this.data.lastActivityAt = Date.now();
         if (this.data.events.length > this.maxEvents) {
@@ -98,10 +105,21 @@ class ActivityTracker {
         else if (type === 'formSubmit') this.data.stats.formSubmits += 1;
         this.updateSessionDuration();
         this.persist();
-        this.refreshWidget();
+        this.refreshStats();
+        this.appendEvent();
     }
 
-
+    appendEvent(event) {
+        if (!this.widgetElements || !this.widgetElements.timelineList) return;
+        const list = this.widgetElements.timelineList;
+        if (list.firstChild && list.firstChild.textContent.trim() === 'No activity yet.') {
+            list.removeChild(list.firstChild);
+        }
+        list.insertBefore(this.createEventItemElement(event), list.firstChild);
+        while (list.children.length > MAX_TIMELINE_DISPLAY) {
+            list.removeChild(list.lastChild);
+        }
+    }
 
     updateDurationDisplay() {
         if (!this.widgetElements || !this.widgetElements.sessionDuration) return;
@@ -191,6 +209,14 @@ class ActivityTracker {
         }
     }
 
+    refreshStats() {
+        if (!this.widgetElements) return;
+        this.widgetElements.pageViews.textContent = `Pages: ${this.data.stats.pageViews}`;
+        this.widgetElements.clicks.textContent = `Clicks: ${this.data.stats.clicks}`;
+        this.widgetElements.formSubmits.textContent = `Forms: ${this.data.stats.formSubmits}`;
+        this.updateDurationDisplay();
+    }
+
     createEventItemElement(event) {
         const li = document.createElement('li');
         li.className = 'activity-tracker-event';
@@ -226,12 +252,11 @@ class ActivityTracker {
     }
 
     isWidgetElement(target) {
-        return Object.values(this.widgetElements).some(element => element && element.contains(target));
+        return this.widgetElements.aside.contains(target);
     }
 
     getClickTargetLabel(target) {
         if (!target || !target.closest) return null;
-
         const element = target.closest('button, a, select, [role="button"], [data-track-click]');
         if (!element) return null;
 
@@ -249,6 +274,7 @@ class ActivityTracker {
         }
         return `User clicked "${label}"`;
     }
+
     handleDocumentClick = (e) => {
         if (this.isWidgetElement(e.target)) return;
         const label = this.getClickTargetLabel(e.target);
