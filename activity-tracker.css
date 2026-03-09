@@ -1,5 +1,9 @@
-/* Implement your styles here */
-.at-widget {
+/* ======= Widget Baseline Style ======= */
+
+/* Modify this to change the styling of the baseline widget */
+/* Mainly used to adjust the overall spacing and overlapping behavior */
+/* Be careful about changing color or fonts styling here as they could be overwritten by later CSS */
+.widget-baseline {
     position: fixed;
     bottom: 20px;
     left: 10px;
@@ -10,7 +14,10 @@
     width: 100%;
 }
 
-.at-toggle-btn {
+/* ======= Widget Toggle Button ======= */
+
+/* Modify this to change the styling of the widget panel toggle button */
+.widget-toggle-btn {
     display: block;
     padding: 8px 14px;
     background: #333333;
@@ -20,11 +27,14 @@
     font-size: 13px;
 }
 
-.at-toggle-btn:hover {
+.widget-toggle-btn:hover {
     background: #555555;
 }
 
-.at-panel {
+/* ======= Widget Main Panel ======= */
+
+/* Modify this to change the styling of the widget expanded panel */
+.widget-panel {
     margin-top: 6px;
     background: #333333;
     border-radius: 8px;
@@ -33,18 +43,22 @@
     overflow-y: auto;
 }
 
-.at-hidden {
+.widget-hidden {
     display: none;
 }
 
-.at-stats {
+/* ======= Session Stats FlexBox + Display ======= */
+
+/* Modify this to change the flexbox alignments */
+.widget-stats-flex {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 8px;
 }
 
-.at-stat {
+/* Modify this to change the styling of ALL stats summary displays within the widget */
+.widget-stat {
     background: #333333;
     color: #d8d8d8;
     padding: 4px 8px;
@@ -54,21 +68,28 @@
     font-weight: 600;
 }
 
-.at-session-id {
+/* ======= Session ID ======= */
+
+/* Modify this to change the styling of session ID styling */
+.widget-session-id {
     font-size: 11px;
     color: #d8d8d8;
     margin: 0 0 10px;
     word-break: break-all;
 }
 
-.at-timeline {
+/* ======= Recorded Events Timeline ======= */
+
+/* Modify this to change the styling of the timeline lines */
+.widget-timeline {
     list-style: none;
     margin: 0;
     padding: 0;
     border-left: 2px solid #d8d8d8;
 }
 
-.at-event {
+/* Modify this to change the styling of main event texts */
+.widget-event {
     position: relative;
     color: #5695e8;
     padding: 6px 10px 6px 18px;
@@ -77,7 +98,9 @@
     line-height: 1.4;
 }
 
-.at-event::before {
+/* Modify this to change the baseline styling of the timeline nodes */
+/* The background color here is for event types that do not belong to planned categories */
+.widget-event::before {
     content: "";
     position: absolute;
     left: -5px;
@@ -88,35 +111,44 @@
     background: #d8d8d8;
 }
 
-.at-event--pageview::before {
+/* Modify this to change the color of the timeline nodes regarding pageview events */
+.widget-event--pageview::before {
     background: #4a90d9;
 }
 
-.at-event--click::before {
+/* Modify this to change the color of the timeline nodes regarding click events */
+.widget-event--click::before {
     background: #e07b39;
 }
 
-.at-event--formsubmit::before {
+/* Modify this to change the color of the timeline nodes regarding form submission events */
+.widget-event--formsubmit::before {
     background: #5cb85c;
 }
 
-.at-event-type {
+/* Modify this to change the styling of main event texts (currently only handles the spacing, font boldness and captilization) */
+.widget-event-type {
     font-weight: 700;
     text-transform: uppercase;
     margin-right: 6px;
 }
 
-.at-event-detail {
+/* Modify this to change the styling of event detail texts (ie which element clicked inside which html) */
+.widget-event-detail {
     color: #d8d8d8;
     margin-right: 6px;
 }
 
-.at-event-time {
+/* Modify this to change the styling of event time texts */
+.widget-event-time {
     color: #d8d8d8;
     font-size: 11px;
     white-space: nowrap;
 }
 
+/* ======= Unified Widget Button ======= */
+
+/* Modify this to change the styling of ALL buttons within the widget */
 .widget-btn {
     margin-top: 8px;
     padding: 4px 10px;
@@ -126,9 +158,15 @@
     font-size: 12px;
 }
 
+/* Modify this to change the on hover styling of ALL buttons within the widget */
 .widget-btn:hover {
     background: rgb(240, 240, 240);
 }
+
+/* ======= Notification Pop-up Taken From product1.html ======= */
+/* Original styling is inside the styles.css in demo folder */
+/* Duplicates here so that the styling is confined to the activity tracker only */
+/* Only changed the z-index from 1100 to 900 so it doesn't overlap the widget, otherwise the same */
 
 .widget-notification {
     position: fixed;

@@ -1,5 +1,4 @@
 class ActivityTracker {
-    // IMPLEMENT YOUR CODE HERE
     constructor() {
         // Prevent duplicate initialization; return existing instance //
         if (window._activityTrackerInstance) {
@@ -69,7 +68,7 @@ class ActivityTracker {
         }
     }
 
-    // Function for getting the current page's name //
+    // Function for getting the current page name //
     _getPageName() {
         const path = location.pathname;
         const parts = path.split("/");
@@ -132,7 +131,7 @@ class ActivityTracker {
             `Duration: ${s.duration}s`
         ];
         for (const text of statEntries) {
-            this.statsEl.appendChild(this._createHTMLElementWithAttr("span", "at-stat", text));
+            this.statsEl.appendChild(this._createHTMLElementWithAttr("span", "widget-stat", text));
         }
 
         this.sessionIdEl.textContent = `Session: ${this.data.sessionId}`;
@@ -141,10 +140,10 @@ class ActivityTracker {
         const frag = document.createDocumentFragment();
         const events = [...this.data.events].reverse();
         for (const evt of events) {
-            const li = this._createHTMLElementWithAttr("li", `at-event at-event--${evt.type}`);
-            li.appendChild(this._createHTMLElementWithAttr("span", "at-event-type", evt.type));
-            li.appendChild(this._createHTMLElementWithAttr("span", "at-event-detail", this._describeEvent(evt)));
-            li.appendChild(this._createHTMLElementWithAttr("span", "at-event-time", new Date(evt.time).toLocaleTimeString()));
+            const li = this._createHTMLElementWithAttr("li", `widget-event widget-event--${evt.type}`);
+            li.appendChild(this._createHTMLElementWithAttr("span", "widget-event-type", evt.type));
+            li.appendChild(this._createHTMLElementWithAttr("span", "widget-event-detail", this._describeEvent(evt)));
+            li.appendChild(this._createHTMLElementWithAttr("span", "widget-event-time", new Date(evt.time).toLocaleTimeString()));
             frag.appendChild(li);
         }
         this.timelineEl.textContent = "";
@@ -161,7 +160,7 @@ class ActivityTracker {
 
     // Function for toggling the session stats panel //
     togglePanel() {
-        const hidden = this.panel.classList.toggle("at-hidden");
+        const hidden = this.panel.classList.toggle("widget-hidden");
         this.toggleBtn.setAttribute("aria-expanded", String(!hidden));
         this.toggleBtn.textContent = hidden ? "Show Session Activity" : "Hide Session Activity";
         try {
@@ -230,12 +229,12 @@ class ActivityTracker {
     // Heavily uses the _createHTMLElementWithAttr function to avoid innerHTML //
     _buildWidget() {
         // Remove any existing widget //
-        const existing = document.querySelector(".at-widget");
+        const existing = document.querySelector(".widget-baseline");
         if (existing) {
             existing.remove();
         }
 
-        const container = this._createHTMLElementWithAttr("div", "at-widget");
+        const container = this._createHTMLElementWithAttr("div", "widget-baseline");
 
         // Restore panel open/closed state from localStorage //
         let panelOpen = false;
@@ -245,17 +244,17 @@ class ActivityTracker {
             // Ignore errors reading panel state //
         }
 
-        this.toggleBtn = this._createHTMLElementWithAttr("button", "at-toggle-btn", panelOpen ? "Hide Session Activity" : "Show Session Activity");
+        this.toggleBtn = this._createHTMLElementWithAttr("button", "widget-toggle-btn", panelOpen ? "Hide Session Activity" : "Show Session Activity");
 
         this.toggleBtn.setAttribute("aria-expanded", String(panelOpen));
         container.appendChild(this.toggleBtn);
 
-        this.panel = this._createHTMLElementWithAttr("div", panelOpen ? "at-panel" : "at-panel at-hidden");
+        this.panel = this._createHTMLElementWithAttr("div", panelOpen ? "widget-panel" : "widget-panel widget-hidden");
 
-        this.statsEl = this._createHTMLElementWithAttr("div", "at-stats");
-        this.sessionIdEl = this._createHTMLElementWithAttr("p", "at-session-id");
+        this.statsEl = this._createHTMLElementWithAttr("div", "widget-stats-flex");
+        this.sessionIdEl = this._createHTMLElementWithAttr("p", "widget-session-id");
         this.timelineEl = document.createElement("ul");
-        this.timelineEl.className = "at-timeline";
+        this.timelineEl.className = "widget-timeline";
         this.clearBtn = this._createHTMLElementWithAttr("button", "widget-btn", "Clear Data");
         this.exportBtn = this._createHTMLElementWithAttr("button", "widget-btn", "Export JSON");
 
@@ -298,7 +297,7 @@ class ActivityTracker {
     _attachListeners() {
         document.addEventListener("click", (e) => {
             const el = e.target;
-            if (el.closest(".at-widget")) {
+            if (el.closest(".widget-baseline")) {
                 return;
             }
             if (el.classList.contains("at-export-download")) {
@@ -320,9 +319,9 @@ class ActivityTracker {
         }, true);
 
         this._durationInterval = setInterval(() => {
-            if (!this.panel.classList.contains("at-hidden")) {
+            if (!this.panel.classList.contains("widget-hidden")) {
                 const s = this.generateStatistics();
-                const durEl = this.statsEl.querySelector(".at-stat:last-child");
+                const durEl = this.statsEl.querySelector(".widget-stat:last-child");
                 if (durEl) {
                     durEl.textContent = `Duration: ${s.duration}s`;
                 }
