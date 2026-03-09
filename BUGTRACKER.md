@@ -25,3 +25,5 @@ Below are the list of bugs with the discovery dates, and status of whether they 
 ## Debugging Instruction
 
 - **Checking Local Storage Structure:** Use the browser's developer tool. If there is a console run `JSON.parse(localStorage.getItem("activity-tracker-data"))`. If console method does not work, go to Application tab (Chrome) or Storage tab (Firefox) in the developer tools panel. Note: The `__proto__` folders sometimes seen during this debugging isn't a bug due to the code, it is just how the browser developer tools display the javascript objects.
+
+- **Running The Script:** In VS Code, right click the `index.html` in the demo folder and use the Live Preview or Live Server function to start a server, copy and paste the URL into the desired web browser. This prevents the CORS issues.
