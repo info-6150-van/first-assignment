@@ -162,6 +162,7 @@ class ActivityTracker {
     _togglePanel() {
         const hidden = this.panel.classList.toggle("at-hidden");
         this.toggleBtn.setAttribute("aria-expanded", String(!hidden));
+        this.toggleBtn.textContent = hidden ? "Show Session Activity" : "Hide Session Activity";
         try {
             localStorage.setItem(this.panelStateKey, String(!hidden));
         } catch (e) {
@@ -169,15 +170,34 @@ class ActivityTracker {
         }
     }
 
+    // Function for showing notification (directly taken from product1.html for consistent behaviors) //
+    showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
     // Function for clearing session stats when the clear button is clicked //
     _clearSession() {
         localStorage.removeItem(this.storageKey);
+        // the panel toggle status is NOT reset by this //
         this.data = {
             sessionId: this._generateSessionId(),
             startedAt: Date.now(),
             events: []
         };
         this._recordEvent("pageview", { page: this._getPageName() });
+        this.showNotification('Data Cleared');
     }
 
     // Function for exporting session data as a JSON file download //
@@ -200,6 +220,7 @@ class ActivityTracker {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+        this.showNotification('Data Exported');
     }
 
     // Function for building the widget that displays the session info //
@@ -213,8 +234,6 @@ class ActivityTracker {
 
         const container = this._el("div", "at-widget");
 
-        this.toggleBtn = this._el("button", "at-toggle-btn", "Activity Tracker");
-
         // Restore panel open/closed state from localStorage
         let panelOpen = false;
         try {
@@ -222,6 +241,8 @@ class ActivityTracker {
         } catch (e) {
             // Ignore errors reading panel state
         }
+
+        this.toggleBtn = this._el("button", "at-toggle-btn", panelOpen ? "Hide Session Activity" : "Show Session Activity");
 
         this.toggleBtn.setAttribute("aria-expanded", String(panelOpen));
         container.appendChild(this.toggleBtn);
@@ -232,8 +253,8 @@ class ActivityTracker {
         this.sessionIdEl = this._el("p", "at-session-id");
         this.timelineEl = document.createElement("ul");
         this.timelineEl.className = "at-timeline";
-        this.clearBtn = this._el("button", "at-clear-btn", "Clear Session");
-        this.exportBtn = this._el("button", "at-export-btn", "Export JSON");
+        this.clearBtn = this._el("button", "widget-btn", "Clear Data");
+        this.exportBtn = this._el("button", "widget-btn", "Export JSON");
 
         this.panel.appendChild(this.statsEl);
         this.panel.appendChild(this.sessionIdEl);
@@ -250,6 +271,8 @@ class ActivityTracker {
     }
 
     // Function for removing external debug control panels that conflict with the built-in widget //
+    // Needed for product1.html since it defines its own session stat debug panel //
+    // Bit of a dirty fix but this is the cleanest method without changing the demo file or re-writing the code //
     _removeExternalDebugControls() {
         const observer = new MutationObserver(() => {
             const debugEl = document.querySelector(".debug-controls");
