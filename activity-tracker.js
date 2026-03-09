@@ -1,6 +1,6 @@
-const STORAGE_KEY = 'activity-tracker-data';
-const MAX_EVENTS = 100;
-const MAX_TIMELINE_DISPLAY = 20;
+// Activity Tracker - Tracks user activity and displays statistics
+import { STORAGE_KEY, MAX_EVENTS, MAX_TIMELINE_DISPLAY } from './constants.js';
+import { formatDuration, formatTimestamp, getPageLabel } from './utils.js';
 
 class ActivityTracker {
     constructor(options = {}) {
@@ -15,12 +15,21 @@ class ActivityTracker {
         this.renderWidget();
         this.attachEventListeners();
 
-        this.recordEvent('pageview', this.getPageLabel());
+        this.recordEvent('pageview', getPageLabel());
         this.startSessionDurationTimer();
 
         ActivityTracker.instance = this;
     }
 
+    persist() {
+        try{
+            localStorage.setItem(this.storageKey, JSON.stringify(this.data));
+        } catch (error){
+            console.error('Failed to persist session:', error);
+        }
+    }
+
+    //Session Managers
     generateSessionId() {
         return `session_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
     }
@@ -49,6 +58,9 @@ class ActivityTracker {
         this.data.stats.sessionDurationMs = durationMs;
     }
 
+    getSessionDurationMs() {
+        return this.data.stats.sessionDuration ?? this.data.stats.sessionDurationMs ?? 0;
+    }
     loadSession() {
         try {
             const stored = localStorage.getItem(this.storageKey);
@@ -68,19 +80,12 @@ class ActivityTracker {
         return this.createSessionData();
     }
     
-    persist() {
-        try{
-            localStorage.setItem(this.storageKey, JSON.stringify(this.data));
-        } catch (error){
-            console.error('Failed to persist session:', error);
-        }
-    }
-
+ 
     recordEvent(type, details) {
         this.data.events.push({
             type,
             details,
-            page: this.getPageLabel(),
+            page: getPageLabel(),
             timestamp: Date.now()
         });
         
@@ -96,33 +101,11 @@ class ActivityTracker {
         this.refreshWidget();
     }
 
-    getPageLabel() {
-        return window.location.pathname.split('/').pop() || 'index.html';
-    }
 
-    formatDuration(time) {
-        const totalSeconds = Math.floor(time / 1000);
-        const h = Math.floor(totalSeconds / 3600);
-        const m = Math.floor((totalSeconds % 3600) / 60);
-        const s = totalSeconds % 60;
-        return [h, m, s].map(v => String(v).padStart(2, '0')).join(':');
-    }
-
-    formatTimestamp(time) {
-        try {
-            return new Date(time).toLocaleString();
-        } catch (_) {
-            return 'Invalid date';
-        }
-    }
-
-    getSessionDurationMs() {
-        return this.data.stats.sessionDuration ?? this.data.stats.sessionDurationMs ?? 0;
-    }
 
     updateDurationDisplay() {
         if (!this.widgetElements || !this.widgetElements.sessionDuration) return;
-        this.widgetElements.sessionDuration.textContent = `Duration: ${this.formatDuration(this.getSessionDurationMs())}`;
+        this.widgetElements.sessionDuration.textContent = `Duration: ${formatDuration(this.getSessionDurationMs())}`;
     }
 
     startSessionDurationTimer() {
@@ -137,6 +120,8 @@ class ActivityTracker {
         }, 1000);
     }
 
+
+    /////////Widget Renderers///////////
     renderWidget() {
         if (this.widgetElements) return;
 
@@ -212,7 +197,7 @@ class ActivityTracker {
 
         const time = document.createElement('span');
         time.className = 'event-time';
-        time.textContent = this.formatTimestamp(event.timestamp);
+        time.textContent = formatTimestamp(event.timestamp);
 
         const type = document.createElement('span');
         type.className = 'event-type';
@@ -230,14 +215,20 @@ class ActivityTracker {
         return li;
     }
 
+    
+    
+    /////////Event Handlers////////
+
     attachEventListeners() {
         document.addEventListener('click', this.handleDocumentClick);
         document.addEventListener('submit', this.handleDocumentSubmit);
         this.widgetElements.toggleBtn.addEventListener('click', this.handleToggleTimeline);
     }
+
     isWidgetElement(target) {
         return Object.values(this.widgetElements).some(element => element && element.contains(target));
     }
+
     getClickTargetLabel(target) {
         if (!target || !target.closest) return null;
 
@@ -249,9 +240,6 @@ class ActivityTracker {
         const tag = element.tagName.toLowerCase();
         return text ? `${tag}${id} (${text})` : `${tag}${id}`;
     }
-    
-    
-    //callbacks
     handleDocumentClick = (e) => {
         if (this.isWidgetElement(e.target)) return;
         const label = this.getClickTargetLabel(e.target);
