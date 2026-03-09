@@ -1,5 +1,3 @@
-// Utility functions for formatting and data extraction
-
 /**
  * Format duration in milliseconds to HH:MM:SS
  * @param {number} time 
@@ -31,5 +29,6 @@ export function formatTimestamp(time) {
  * @returns {string} Page label
  */
 export function getPageLabel() {
-    return window.location.pathname.split('/').pop() || 'index.html';
+    const pageName = window.location.pathname.split('/').pop() || 'index.html';
+    return `User viewed page "${pageName}"`;
 }

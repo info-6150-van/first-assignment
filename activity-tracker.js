@@ -236,9 +236,18 @@ class ActivityTracker {
         if (!element) return null;
 
         const text = (element.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 60);
-        const id = element.id ? `#${element.id}` : '';
+        const label = element.id || text || element.tagName.toLowerCase();
         const tag = element.tagName.toLowerCase();
-        return text ? `${tag}${id} (${text})` : `${tag}${id}`;
+        
+        // Special handling for select elements to show selected value
+        if (tag === 'select') {
+            const selectedOption = element.options[element.selectedIndex];
+            const selectedText = selectedOption ? selectedOption.text : null;
+            if (selectedText) {
+                return `User clicked "${label}" select and selected "${selectedText}"`;
+            }
+        }
+        return `User clicked "${label}"`;
     }
     handleDocumentClick = (e) => {
         if (this.isWidgetElement(e.target)) return;
@@ -250,7 +259,8 @@ class ActivityTracker {
     handleDocumentSubmit = (e) => {
         if (this.isWidgetElement(e.target)) return;
         const form = e.target;
-        this.recordEvent('formSubmit', `form: ${form.id}`);
+        const formLabel = form.id || form.name || 'unnamed form';
+        this.recordEvent('formSubmit', `User submitted form "${formLabel}"`);
     }
     
     handleToggleTimeline = (e) => {
