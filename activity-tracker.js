@@ -12,6 +12,10 @@ class ActivityTracker {
         // Load from localStorage or create new session //
         this.data = this._load();
 
+        // Build event counters to optimize performance //
+        this._eventCounts = { pages: 0, clicks: 0, forms: 0 };
+        this._rebuildCounts();
+
         // Record the initial preview without triggering render //
         this._recordInitialPageview();
 
@@ -71,7 +75,30 @@ class ActivityTracker {
         }
     }
 
+    // Function for incrementing event counts based on input type //
+    _incrementCount(type) {
+        if (type === "pageview") {
+            this._eventCounts.pages ++;
+        }
+        else if (type === "click") {
+            this._eventCounts.clicks ++;
+        }
+        else if (type === "formsubmit") {
+            this._eventCounts.forms ++;
+        }
+    }
+
+    // Function for rebuilding event counters //
+    _rebuildCounts() {
+        this._eventCounts = { pages: 0, clicks: 0, forms: 0 };
+        for (const e of this.data.events) {
+            this._incrementCount(e.type);
+        }
+    }
+
     // Function for a debounced save with delay to optimize performance //
+    // used to mitigate issues with rapid clicks causing saving lags //
+    // although this is not directly observed on my machine //
     _debouncedSave(logging = false) {
         // Optional logging for debugging //
         if (logging) {
@@ -90,12 +117,8 @@ class ActivityTracker {
 
     // Function for generating the session statistics //
     generateStatistics() {
-        const evts = this.data.events;
-        const pages = evts.filter(e => e.type === "pageview").length;
-        const clicks = evts.filter(e => e.type === "click").length;
-        const forms = evts.filter(e => e.type === "formsubmit").length;
         const duration = Math.round((Date.now() - this.data.startedAt) / 1000);
-        return { pages, clicks, forms, duration };
+        return { ...this._eventCounts, duration };
     }
 
     // Function for recording the initial event without triggering render
@@ -103,6 +126,7 @@ class ActivityTracker {
     _recordInitialPageview() {
         const evt = { type: "pageview", time: Date.now(), page: this._getPageName() };
         this.data.events.push(evt);
+        this._incrementCount("pageview");
         this._save();
     }
 
@@ -184,6 +208,7 @@ class ActivityTracker {
     _recordEvent(type, details = {}) {
         const evt = { type, time: Date.now(), ...details };
         this.data.events.push(evt);
+        this._incrementCount(type);
         this._debouncedSave();
         this._renderWidget();
     }
@@ -223,12 +248,12 @@ class ActivityTracker {
     // Function for clearing session stats when the clear button is clicked //
     clearSession() {
         localStorage.removeItem(this.storageKey);
-        // the panel toggle status is NOT reset by this //
         this.data = {
             sessionId: this._generateSessionId(),
             startedAt: Date.now(),
             events: []
         };
+        this._eventCounts = { pages: 0, clicks: 0, forms: 0 };
         this._recordEvent("pageview", { page: this._getPageName() });
         this.showNotification('Data Cleared');
     }
