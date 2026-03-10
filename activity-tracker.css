@@ -41,10 +41,27 @@
     border: none;
     border-radius: 6px;
     font-size: 13px;
+    text-align: left;
+    width: auto;
 }
 
 .widget-toggle-btn:hover {
     background: var(--color-bg-highlight);
+}
+
+/* Modify this to change the styling of the main label text inside the toggle button */
+.widget-toggle-btn-label {
+    display: block;
+}
+
+/* Modify this to change the styling of the inline stats summary shown when the panel is closed */
+.widget-toggle-btn-stats {
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--color-text);
+    margin-top: 3px;
+    opacity: 0.85;
 }
 
 /* ======= Widget Main Panel ======= */

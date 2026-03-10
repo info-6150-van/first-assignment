@@ -123,6 +123,18 @@ class ActivityTracker {
         }
     }
 
+    // Function for updating the inline stats shown on the toggle button when the panel is closed //
+    _updateToggleBtnStats() {
+        const stats = this.generateStatistics();
+        const isPanelHidden = this.panel.classList.contains("widget-hidden");
+        if (isPanelHidden) {
+            this.toggleBtnStats.textContent = `Pages: ${stats.pages} - Clicks: ${stats.clicks} - Forms: ${stats.forms}`;
+            this.toggleBtnStats.classList.remove("widget-hidden");
+        } else {
+            this.toggleBtnStats.classList.add("widget-hidden");
+        }
+    }
+
     // Function for rendering the widget //
     _renderWidget() {
         const stats = this.generateStatistics();
@@ -139,7 +151,10 @@ class ActivityTracker {
             this.statsEl.appendChild(this._createHTMLElementWithAttr("span", "widget-stat", text));
         }
 
-        this.sessionIdEl.textContent = `Session: ${this.data.sessionId}`;
+        this.sessionIdEl.textContent = `Session: ${this.data.sessionId} | Started: ${new Date(this.data.startedAt).toLocaleTimeString()}`;
+
+        // Update inline stats on toggle button //
+        this._updateToggleBtnStats();
 
         // Rebuild timeline //
         const frag = document.createDocumentFragment();
@@ -167,7 +182,8 @@ class ActivityTracker {
     togglePanel() {
         const hidden = this.panel.classList.toggle("widget-hidden");
         this.toggleBtn.setAttribute("aria-expanded", String(!hidden));
-        this.toggleBtn.textContent = hidden ? "Show Session Activity" : "Hide Session Activity";
+        this.toggleBtnLabel.textContent = hidden ? "Show Session Details" : "Hide Session Details";
+        this._updateToggleBtnStats();
         try {
             localStorage.setItem(this.panelStateKey, String(!hidden));
         } catch (e) {
@@ -256,7 +272,13 @@ class ActivityTracker {
             console.warn("Failed to read panel state:", e);
         }
 
-        this.toggleBtn = this._createHTMLElementWithAttr("button", "widget-toggle-btn", panelOpen ? "Hide Session Activity" : "Show Session Activity");
+        // Toggle button with a label span and a stats summary span //
+        this.toggleBtn = this._createHTMLElementWithAttr("button", "widget-toggle-btn");
+        this.toggleBtnLabel = this._createHTMLElementWithAttr("span", "widget-toggle-btn-label", panelOpen ? "Hide Session Details" : "Show Session Details");
+        this.toggleBtnStats = this._createHTMLElementWithAttr("span", panelOpen ? "widget-toggle-btn-stats widget-hidden" : "widget-toggle-btn-stats");
+
+        this.toggleBtn.appendChild(this.toggleBtnLabel);
+        this.toggleBtn.appendChild(this.toggleBtnStats);
 
         this.toggleBtn.setAttribute("aria-expanded", String(panelOpen));
         container.appendChild(this.toggleBtn);
