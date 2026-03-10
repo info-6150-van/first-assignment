@@ -7,12 +7,17 @@ class ActivityTracker {
     this.data = this._load() || this._createNewSession();
     this.ui = null;
     this.isOpen = this.data.ui?.open ?? false;
+    this.pageStartTime = Date.now();
 
     // Ensure session exists
     if (!this.data.sessionId || !this.data.startedAt || !Array.isArray(this.data.events)) {
-      this.data = this._createNewSession();
+      this.data = this._load() || this._createNewSession();
+      
     }
-
+    const currentPage = this._getPageName();
+    if (currentPage === "index.html") {
+    this.data.startedAt = Date.now();
+    }
     // Record pageview on load
     this.recordPageView();
 
@@ -266,7 +271,7 @@ class ActivityTracker {
     this.ui.statsEls.pageviews.textContent = String(pageviews);
     this.ui.statsEls.clicks.textContent = String(clicks);
     this.ui.statsEls.forms.textContent = String(forms);
-    this.ui.statsEls.duration.textContent = this._formatDuration(Date.now() - this.data.startedAt);
+    this.ui.statsEls.duration.textContent = this._formatDuration(Date.now() - this.pageStartTime);
 
     // Toggle open/close
     this.ui.toggleBtn.textContent = this.isOpen ? "Hide" : "Show";
@@ -317,7 +322,7 @@ class ActivityTracker {
     if (this._durationTimer) return;
     this._durationTimer = setInterval(() => {
       if (!this.ui) return;
-      this.ui.statsEls.duration.textContent = this._formatDuration(Date.now() - this.data.startedAt);
+      this.ui.statsEls.duration.textContent = this._formatDuration(Date.now() - this.pageStartTime);
     }, 1000);
   }
 
