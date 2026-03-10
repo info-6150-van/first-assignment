@@ -71,6 +71,16 @@ class ActivityTracker {
         }
     }
 
+    // Function for a debounced save with delay to optimize performance //
+    _debouncedSave(logging = false) {
+        // Optional logging for debugging //
+        if (logging) {
+            console.log('Save debounced — resetting timer');
+        }
+        clearTimeout(this._saveTimer);
+        this._saveTimer = setTimeout(() => this._save(), 500);
+    }
+
     // Function for getting the current page name //
     _getPageName() {
         const path = location.pathname;
@@ -113,13 +123,13 @@ class ActivityTracker {
     _describeEvent(evt) {
         switch (evt.type) {
             case "pageview":
-                return evt.page || "";
+                return evt.page || "Generic PageView";
             case "click":
-                return evt.details || "";
+                return evt.details || "Generic Click";
             case "formsubmit":
-                return evt.details || "form submitted";
+                return evt.details || "Generic Form Submission";
             default:
-                return "";
+                return "Uncategorized Event";
         }
     }
 
@@ -174,7 +184,7 @@ class ActivityTracker {
     _recordEvent(type, details = {}) {
         const evt = { type, time: Date.now(), ...details };
         this.data.events.push(evt);
-        this._save();
+        this._debouncedSave();
         this._renderWidget();
     }
 
@@ -359,6 +369,12 @@ class ActivityTracker {
             const desc = id || name || "anonymous form";
             this._recordEvent("formsubmit", { details: desc });
         }, true);
+
+        // Force a save upon unloading to make sure pending changes are saved //
+        window.addEventListener("beforeunload", () => {
+            clearTimeout(this._saveTimer);
+            this._save();
+        });
 
         this._durationInterval = setInterval(() => {
             if (!this.panel.classList.contains("widget-hidden")) {
