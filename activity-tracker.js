@@ -130,8 +130,11 @@ class ActivityTracker {
     }
 
     // Function for generating the session statistics //
-    generateStatistics() {
+    generateStatistics(logging = this.DEBUG) {
         const duration = Math.round((Date.now() - this.data.startedAt) / 1000);
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Generated Session Data Statistics`);
+        }
         return { ...this._eventCounts, duration };
     }
 
@@ -191,7 +194,11 @@ class ActivityTracker {
     }
 
     // Function for prepending a single event to the timeline and updating the statistics //
-    _appendEventToTimeline(evt) {
+    _appendEventToTimeline(evt, logging = this.DEBUG) {
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Starting Appending Event To Timeline`);
+        }
+
         const stats = this.generateStatistics();
         const statEntries = [
             `Pages: ${stats.pages}`,
@@ -211,6 +218,10 @@ class ActivityTracker {
         liElement.appendChild(this._createHTMLElementWithAttr("span", "widget-event-detail", this._describeEvent(evt)));
         liElement.appendChild(this._createHTMLElementWithAttr("span", "widget-event-time", new Date(evt.time).toLocaleTimeString()));
         this.timelineEl.insertBefore(liElement, this.timelineEl.firstChild);
+
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Finishes Appending Event To Timeline`);
+        }
     }
 
     // Function for rendering the widget //
