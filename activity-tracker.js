@@ -230,6 +230,12 @@ class ActivityTracker {
         this.showNotification('Data Exported');
     }
 
+    // Function for exporting session data and then clear data //
+    exportThenClear() {
+        this.exportToJSON();
+        this.clearSession();
+    }
+
     // Function for building the widget that displays the session info //
     // Heavily uses the _createHTMLElementWithAttr function to avoid innerHTML //
     // Also has parts relevant to persistent panel toggle state and duplicates removal //
@@ -263,12 +269,15 @@ class ActivityTracker {
         this.timelineEl.className = "widget-timeline";
         this.clearBtn = this._createHTMLElementWithAttr("button", "widget-btn", "Clear Data");
         this.exportBtn = this._createHTMLElementWithAttr("button", "widget-btn", "Export JSON");
+        this.exportThenClearBtn = this._createHTMLElementWithAttr("button", "widget-btn", "Export & Clear");
 
         this.panel.appendChild(this.statsEl);
         this.panel.appendChild(this.sessionIdEl);
         this.panel.appendChild(this.timelineEl);
         this.panel.appendChild(this.clearBtn);
         this.panel.appendChild(this.exportBtn);
+        this.panel.appendChild(this.exportThenClearBtn);
+
 
         container.appendChild(this.panel);
         document.body.appendChild(container);
@@ -276,6 +285,7 @@ class ActivityTracker {
         this.toggleBtn.addEventListener("click", () => this.togglePanel());
         this.clearBtn.addEventListener("click", () => this.clearSession());
         this.exportBtn.addEventListener("click", () => this.exportToJSON());
+        this.exportThenClearBtn.addEventListener("click", () => this.exportThenClear());
     }
 
     // Function for removing external debug control panels that conflict with the built-in widget //
