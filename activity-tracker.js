@@ -281,6 +281,11 @@ class ActivityTracker {
 
     // Function for toggling the session stats panel and saving the toggle states to local storage //
     togglePanel() {
+        if (!this.panel) {
+            console.warn("Panel Toggle Control: Panel Does Not Exist")
+            return;
+        }
+
         const hidden = this.panel.classList.toggle("widget-hidden");
         this.toggleBtn.setAttribute("aria-expanded", String(!hidden));
         this.toggleBtnLabel.textContent = hidden ? "Show Session Details" : "Hide Session Details";
@@ -447,41 +452,37 @@ class ActivityTracker {
     // Needed for product1.html since it defines its own session stat debug panel //
     // Bit of a dirty fix but this is the cleanest method without changing the demo file or re-writing the code //
     _removeExternalDebugControls(logging = this.DEBUG) {
-        if (logging) {
-            console.log(`[DEBUG][${new Date().toISOString()}] Attempting Removing External Debug Panel`);
+        const tryRemove = () => {
+            if (logging) {
+                console.log(`[DEBUG][${new Date().toISOString()}] Attempting Detecting External Debug Panel`);
+            }
+            const el = document.querySelector(".debug-controls");
+            if (el) {
+                el.remove();
+                if (logging) {
+                    console.log(`[DEBUG][${new Date().toISOString()}] External Debug Panel Detected and Removed`);
+                }
+                return true;
+            }
+            if (logging) {
+                console.log(`[DEBUG][${new Date().toISOString()}] No External Debug Panel Detected`);
+            }
+            return false;
+        };
+
+        if (tryRemove()) {
+            return;
         }
 
         const observer = new MutationObserver(() => {
-            const debugEl = document.querySelector(".debug-controls");
-            if (debugEl) {
-                if (logging) {
-                    console.log(`[DEBUG][${new Date().toISOString()}] External Debug Panel Detected`);
-                }
-                debugEl.remove();
+            if (tryRemove()) {
                 observer.disconnect();
-                if (logging) {
-                    console.log(`[DEBUG][${new Date().toISOString()}] External Debug Panel Removed`);
-                }
             }
         });
         observer.observe(document.body, { childList: true, subtree: true });
 
-        // Also remove immediately if it already exists //
-        const existing = document.querySelector(".debug-controls");
-        if (existing) {
-            if (logging) {
-                console.log(`[DEBUG][${new Date().toISOString()}] External Debug Panel Detected`);
-            }
-            existing.remove();
-            observer.disconnect();
-            if (logging) {
-                console.log(`[DEBUG][${new Date().toISOString()}] External Debug Panel Removed`);
-            }
-        }
-
-        if (logging) {
-            console.log(`[DEBUG][${new Date().toISOString()}] Finished Pipeline Removing External Debug Panel`);
-        }
+        // Give up after 5000 miliseconds
+        setTimeout(() => observer.disconnect(), 5000);
     }
 
     // Function for attaching event listeners, with event delegation to optimize performance //
@@ -503,7 +504,8 @@ class ActivityTracker {
             }
             const tag = el.tagName.toLowerCase();
             const id = el.id ? `#${el.id}` : "";
-            const cls = el.className ? `.${String(el.className).split(" ")[0]}` : "";
+            const rawClass = el.getAttribute?.("class") || "";
+            const cls = rawClass ? `.${rawClass.split(" ")[0]}` : "";
             const desc = `<${tag}${id || cls}>${(el.textContent || "").substring(0, 30).trim()}`;
             this._recordEvent("click", { details: desc });
         }, true);
