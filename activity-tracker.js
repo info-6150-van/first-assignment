@@ -100,9 +100,8 @@ class ActivityTracker {
     // used to mitigate issues with rapid clicks causing saving lags //
     // although this is not directly observed on my machine //
     _debouncedSave(logging = false) {
-        // Optional logging for debugging //
         if (logging) {
-            console.log('Save debounced — resetting timer');
+            console.log(`[DEBUG][${new Date().toISOString()}] Save debounced - resetting timer`);
         }
         clearTimeout(this._saveTimer);
         this._saveTimer = setTimeout(() => this._save(), 500);
@@ -132,7 +131,10 @@ class ActivityTracker {
 
     // Function for creating the html element with given tag, classname, and text content //
     // Used to avoid the usage of innerHTML //
-    _createHTMLElementWithAttr(tag, className, textContent) {
+    _createHTMLElementWithAttr(tag, className, textContent, logging = false) {
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Attempting to create HTML element with tag:${tag}, className:${className}, textContent:${textContent}`)
+        }
         const newElement = document.createElement(tag);
         if (className) {
             newElement.className = className;
@@ -269,7 +271,7 @@ class ActivityTracker {
         }
 
     // Function for clearing session stats when the clear button is clicked //
-    clearSession() {
+    clearSession(logging = false) {
         localStorage.removeItem(this.storageKey);
         this.data = {
             sessionId: this._generateSessionId(),
@@ -281,10 +283,13 @@ class ActivityTracker {
         this._save();
         this._renderWidget();
         this.showNotification('Data Cleared');
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Cleared Session Data`);
+        }
     }
 
     // Function for exporting session data as a JSON file download //
-    exportToJSON() {
+    exportToJSON(logging = false) {
         const exportData = {
             sessionId: this.data.sessionId,
             startedAt: this.data.startedAt,
@@ -304,16 +309,19 @@ class ActivityTracker {
         document.body.removeChild(dummyLink);
         URL.revokeObjectURL(url);
         this.showNotification('Data Exported');
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Exported Session Data`);
+        }
     }
 
     // Function for exporting session data and then clear data //
-    exportThenClear() {
-        this.exportToJSON();
+    exportThenClear(logging = false) {
+        this.exportToJSON(logging);
         const confirmed = window.confirm(
             "Please confirm whether the JSON download was successful. Click OK to clear data, or Cancel to keep data."
         );
         if (confirmed) {
-            this.clearSession();
+            this.clearSession(logging);
         }
     }
 
