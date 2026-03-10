@@ -219,19 +219,20 @@ class ActivityTracker {
         const json = JSON.stringify(exportData, null, 2);
         const blob = new Blob([json], { type: "application/json" });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${this.data.sessionId}.json`;
-        a.className = "at-export-download";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        const dummyLink = document.createElement("a");
+        dummyLink.href = url;
+        dummyLink.download = `${this.data.sessionId}.json`;
+        dummyLink.className = "at-export-download";
+        document.body.appendChild(dummyLink);
+        dummyLink.click();
+        document.body.removeChild(dummyLink);
         URL.revokeObjectURL(url);
         this.showNotification('Data Exported');
     }
 
     // Function for building the widget that displays the session info //
     // Heavily uses the _createHTMLElementWithAttr function to avoid innerHTML //
+    // Also has parts relevant to persistent panel toggle state and duplicates removal //
     _buildWidget() {
         // Remove any existing widget //
         const existing = document.querySelector(".widget-baseline");
@@ -246,7 +247,7 @@ class ActivityTracker {
         try {
             panelOpen = localStorage.getItem(this.panelStateKey) === "true";
         } catch (e) {
-            // Ignore errors reading panel state //
+            console.warn("Failed to read panel state:", e);
         }
 
         this.toggleBtn = this._createHTMLElementWithAttr("button", "widget-toggle-btn", panelOpen ? "Hide Session Activity" : "Show Session Activity");
@@ -325,10 +326,10 @@ class ActivityTracker {
 
         this._durationInterval = setInterval(() => {
             if (!this.panel.classList.contains("widget-hidden")) {
-                const s = this.generateStatistics();
+                const stats = this.generateStatistics();
                 const durEl = this.statsEl.querySelector(".widget-stat:last-child");
                 if (durEl) {
-                    durEl.textContent = `Duration: ${s.duration}s`;
+                    durEl.textContent = `Duration: ${stats.duration}s`;
                 }
             }
         }, 1000);
