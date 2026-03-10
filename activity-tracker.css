@@ -7,7 +7,10 @@
   --color-border: #d8d8d8;
   --color-text: #d8d8d8;
   --color-timeline-line:#d8d8d8;
-  --color-event-text: #5695e8;
+  --color-eventtext-unknown: #d8d8d8;
+  --color-eventtext-pageview: #5695e8;
+  --color-eventtext-click: #e07b39;
+  --color-eventtext-form: #5cb85c;
   --color-eventblob-unknown: #d8d8d8;
   --color-eventblob-pageview: #5695e8;
   --color-eventblob-click: #e07b39;
@@ -131,7 +134,7 @@
 /* Modify this to change the styling of main event texts */
 .widget-event {
     position: relative;
-    color: var(--color-event-text);
+    color: var(--color-eventtext-unknown);
     padding: 3px 10px 3px 18px;
     margin-bottom: 1px;
     font-size: 12px;
@@ -164,6 +167,21 @@
 /* Modify this to change the color of the timeline nodes regarding form submission events */
 .widget-event--formsubmit::before {
     background: var(--color-eventblob-form);
+}
+
+/* Modify this to change the styling of the timeline text regarding pageview events */
+.widget-event--pageview {
+    color: var(--color-eventtext-pageview);
+}
+
+/* Modify this to change the styling of the timeline text regarding click events */
+.widget-event--click {
+    color: var(--color-eventtext-click);
+}
+
+/* Modify this to change the styling of the timeline text regarding form submission events */
+.widget-event--formsubmit {
+    color: var(--color-eventtext-form);
 }
 
 /* Modify this to change the styling of main event texts (currently only handles the spacing, font boldness and captilization) */
