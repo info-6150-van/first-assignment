@@ -255,6 +255,7 @@ class ActivityTracker {
         };
         this._eventCounts = { pages: 0, clicks: 0, forms: 0 };
         this._recordEvent("pageview", { page: this._getPageName() });
+        this._save();
         this.showNotification('Data Cleared');
     }
 
