@@ -1,5 +1,8 @@
 class ActivityTracker {
     constructor() {
+        // Set centralized debugging status //
+        this.DEBUG = false;
+
         // Prevent duplicate initialization; return existing instance //
         if (window._activityTrackerInstance) {
             return window._activityTrackerInstance;
@@ -44,7 +47,10 @@ class ActivityTracker {
     }
 
     // Function for loading from localStorage or create new session if none can be loaded //
-    _load() {
+    _load(logging = this.DEBUG) {
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Attempting Loading From Local Storage Or Creating New Session If Loading Fails`)
+        }
         try {
             const rawData = localStorage.getItem(this.storageKey);
             if (rawData) {
@@ -59,6 +65,9 @@ class ActivityTracker {
         } catch (e) {
             console.warn("Failed to load session data:", e);
         }
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Finished Loading From Local Storage Or Creating New Session If Loading Fails`)
+        }
         return {
             sessionId: this._generateSessionId(),
             startedAt: Date.now(),
@@ -67,9 +76,15 @@ class ActivityTracker {
     }
 
     // Function for saving to localStorage //
-    _save() {
+    _save(logging = this.DEBUG) {
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Attempting Saving to Local Storage`)
+        }
         try {
             localStorage.setItem(this.storageKey, JSON.stringify(this.data));
+            if (logging) {
+                console.log(`[DEBUG][${new Date().toISOString()}] Finished Saving to Local Storage`)
+            }
         } catch (e) {
             console.warn("Failed to save session data:", e);
         }
@@ -99,12 +114,12 @@ class ActivityTracker {
     // Function for a debounced save with delay to optimize performance //
     // used to mitigate issues with rapid clicks causing saving lags //
     // although this is not directly observed on my machine //
-    _debouncedSave(logging = false) {
-        if (logging) {
-            console.log(`[DEBUG][${new Date().toISOString()}] Save debounced - resetting timer`);
-        }
+    _debouncedSave(logging = this.DEBUG) {
         clearTimeout(this._saveTimer);
         this._saveTimer = setTimeout(() => this._save(), 500);
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Scheduled Debounced Session Data Saving`);
+        }
     }
 
     // Function for getting the current page name //
@@ -131,9 +146,9 @@ class ActivityTracker {
 
     // Function for creating the html element with given tag, classname, and text content //
     // Used to avoid the usage of innerHTML //
-    _createHTMLElementWithAttr(tag, className, textContent, logging = false) {
+    _createHTMLElementWithAttr(tag, className, textContent, logging = this.DEBUG) {
         if (logging) {
-            console.log(`[DEBUG][${new Date().toISOString()}] Attempting to create HTML element with tag:${tag}, className:${className}, textContent:${textContent}`)
+            console.log(`[DEBUG][${new Date().toISOString()}] Attempting Creating HTML Element with tag:${tag}, className:${className}, textContent:${textContent}`)
         }
         const newElement = document.createElement(tag);
         if (className) {
@@ -142,7 +157,11 @@ class ActivityTracker {
         if (textContent != null) {
             newElement.textContent = textContent;
         }
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Finished Creating HTML Element with tag:${tag}, className:${className}, textContent:${textContent}`)
+        }
         return newElement;
+        
     }
 
     // Function for describing a recorded event //
@@ -230,9 +249,12 @@ class ActivityTracker {
     }
 
     // Function for recording an event then saving and triggering render //
-    _recordEvent(type, details = {}) {
+    _recordEvent(type, details = {}, logging = this.DEBUG) {
         const evt = { type, time: Date.now(), ...details };
         this.data.events.push(evt);
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Recorded Event of type ${type}`)
+        }
         this._incrementCount(type);
         this._debouncedSave();
         this._appendEventToTimeline(evt);
@@ -253,25 +275,28 @@ class ActivityTracker {
 
     // Function for showing notification (directly taken from product1.html for consistent behaviors) //
     showNotification(message) {
-            const notification = document.createElement('div');
-            // only modified here so that the CSS style is confined to the activity tracker only //
-            // and to make that the notification does not overlap the info panel //
-            notification.className = 'widget-notification';
-            notification.textContent = message;
-            document.body.appendChild(notification);
+        const notification = document.createElement('div');
+        // only modified here so that the CSS style is confined to the activity tracker only //
+        // and to make that the notification does not overlap the info panel //
+        notification.className = 'widget-notification';
+        notification.textContent = message;
+        document.body.appendChild(notification);
 
-            setTimeout(() => {
-                notification.classList.add('show');
-            }, 100);
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 100);
 
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
 
     // Function for clearing session stats when the clear button is clicked //
-    clearSession(logging = false) {
+    clearSession(logging = this.DEBUG) {
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Attempting to Clear Session Data`);
+        }
         localStorage.removeItem(this.storageKey);
         this.data = {
             sessionId: this._generateSessionId(),
@@ -289,7 +314,10 @@ class ActivityTracker {
     }
 
     // Function for exporting session data as a JSON file download //
-    exportToJSON(logging = false) {
+    exportToJSON(logging = this.DEBUG) {
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Attempting to Export Session Data`);
+        }
         const exportData = {
             sessionId: this.data.sessionId,
             startedAt: this.data.startedAt,
@@ -315,7 +343,7 @@ class ActivityTracker {
     }
 
     // Function for exporting session data and then clear data //
-    exportThenClear(logging = false) {
+    exportThenClear(logging = this.DEBUG) {
         this.exportToJSON(logging);
         const confirmed = window.confirm(
             "Please confirm whether the JSON download was successful. Click OK to clear data, or Cancel to keep data."
