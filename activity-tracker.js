@@ -35,8 +35,8 @@ class ActivityTracker {
 
     // Function for generating session ID using current time //
     _generateSessionId() {
-        const ts = Date.now();
-        return `session_${ts}`;
+        const timeStamp = Date.now();
+        return `session_${timeStamp}`;
     }
 
     // Function for loading from localStorage or create new session if none can be loaded //
@@ -160,11 +160,11 @@ class ActivityTracker {
         const frag = document.createDocumentFragment();
         const events = [...this.data.events].reverse();
         for (const evt of events) {
-            const li = this._createHTMLElementWithAttr("li", `widget-event widget-event--${evt.type}`);
-            li.appendChild(this._createHTMLElementWithAttr("span", "widget-event-type", evt.type));
-            li.appendChild(this._createHTMLElementWithAttr("span", "widget-event-detail", this._describeEvent(evt)));
-            li.appendChild(this._createHTMLElementWithAttr("span", "widget-event-time", new Date(evt.time).toLocaleTimeString()));
-            frag.appendChild(li);
+            const liElement = this._createHTMLElementWithAttr("li", `widget-event widget-event--${evt.type}`);
+            liElement.appendChild(this._createHTMLElementWithAttr("span", "widget-event-type", evt.type));
+            liElement.appendChild(this._createHTMLElementWithAttr("span", "widget-event-detail", this._describeEvent(evt)));
+            liElement.appendChild(this._createHTMLElementWithAttr("span", "widget-event-time", new Date(evt.time).toLocaleTimeString()));
+            frag.appendChild(liElement);
         }
         this.timelineEl.textContent = "";
         this.timelineEl.appendChild(frag);
@@ -238,7 +238,7 @@ class ActivityTracker {
         const dummyLink = document.createElement("a");
         dummyLink.href = url;
         dummyLink.download = `${this.data.sessionId}.json`;
-        dummyLink.className = "at-export-download";
+        dummyLink.className = "widget-export-download";
         document.body.appendChild(dummyLink);
         dummyLink.click();
         document.body.removeChild(dummyLink);
@@ -338,7 +338,7 @@ class ActivityTracker {
             if (el.closest(".widget-baseline")) {
                 return;
             }
-            if (el.classList.contains("at-export-download")) {
+            if (el.classList.contains("widget-export-download")) {
                 return;
             }
             const tag = el.tagName.toLowerCase();
