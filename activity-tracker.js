@@ -169,11 +169,34 @@ class ActivityTracker {
         }
     }
 
+    // Function for prepending a single event to the timeline and updating the statistics //
+    _appendEventToTimeline(evt) {
+        const stats = this.generateStatistics();
+        const statEntries = [
+            `Pages: ${stats.pages}`,
+            `Clicks: ${stats.clicks}`,
+            `Forms: ${stats.forms}`,
+            `Duration: ${stats.duration}s`
+        ];
+        const statSpans = this.statsEl.querySelectorAll(".widget-stat");
+        for (let i = 0; i < statSpans.length; i++) {
+            statSpans[i].textContent = statEntries[i];
+        }
+
+        this._updateToggleBtnStats();
+
+        const liElement = this._createHTMLElementWithAttr("li", `widget-event widget-event--${evt.type}`);
+        liElement.appendChild(this._createHTMLElementWithAttr("span", "widget-event-type", evt.type));
+        liElement.appendChild(this._createHTMLElementWithAttr("span", "widget-event-detail", this._describeEvent(evt)));
+        liElement.appendChild(this._createHTMLElementWithAttr("span", "widget-event-time", new Date(evt.time).toLocaleTimeString()));
+        this.timelineEl.insertBefore(liElement, this.timelineEl.firstChild);
+    }
+
     // Function for rendering the widget //
     _renderWidget() {
         const stats = this.generateStatistics();
 
-        // Rebuild stats //
+        // Stats //
         this.statsEl.textContent = "";
         const statEntries = [
             `Pages: ${stats.pages}`,
@@ -190,7 +213,7 @@ class ActivityTracker {
         // Update inline stats on toggle button //
         this._updateToggleBtnStats();
 
-        // Rebuild timeline //
+        // Timeline //
         const frag = document.createDocumentFragment();
         const events = [...this.data.events].reverse();
         for (const evt of events) {
@@ -210,7 +233,7 @@ class ActivityTracker {
         this.data.events.push(evt);
         this._incrementCount(type);
         this._debouncedSave();
-        this._renderWidget();
+        this._appendEventToTimeline(evt);
     }
 
     // Function for toggling the session stats panel and saving the toggle states to local storage //
@@ -256,6 +279,7 @@ class ActivityTracker {
         this._eventCounts = { pages: 0, clicks: 0, forms: 0 };
         this._recordEvent("pageview", { page: this._getPageName() });
         this._save();
+        this._renderWidget();
         this.showNotification('Data Cleared');
     }
 
@@ -285,7 +309,12 @@ class ActivityTracker {
     // Function for exporting session data and then clear data //
     exportThenClear() {
         this.exportToJSON();
-        this.clearSession();
+        const confirmed = window.confirm(
+            "Please confirm whether the JSON download was successful. Click OK to clear data, or Cancel to keep data."
+        );
+        if (confirmed) {
+            this.clearSession();
+        }
     }
 
     // Function for building the widget that displays the session info //
@@ -293,9 +322,9 @@ class ActivityTracker {
     // Also has parts relevant to persistent panel toggle state and duplicates removal //
     _buildWidget() {
         // Remove any existing widget //
-        const existing = document.querySelector(".widget-baseline");
-        if (existing) {
-            existing.remove();
+        const existingInstance = document.querySelector(".widget-baseline");
+        if (existingInstance) {
+            existingInstance.remove();
         }
 
         const container = this._createHTMLElementWithAttr("div", "widget-baseline");

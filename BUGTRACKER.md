@@ -22,10 +22,12 @@ Below are the list of bugs with the discovery dates, and status of whether they 
 
 - **2026-03-07 Major Bug - Duplicate Broken Popup In Product Page (Fixed 2026-03-08):** In `product1.html` there is a separate activity tracker that is popping up, which is not connected to the actual widget. **The fix involves overwriting the existing API in the page**.
 
-- **2026-03-09 Medium Bug - Click Log Entries When Page Fails (Won't Fix 2026-03-09):** Right now when the test server stops unexpectedly which leaves a "zombie page" open and the page redirection does not work, the click event is still registered but the pageview event is not. It is decided that this won't be fixed, as the log, although confusing, is actually meaningful for diagnostics.
+- **2026-03-09 Medium Bug - Click Log Entries When Page Fails (Won't Fix 2026-03-09):** Right now when the test server stops unexpectedly which leaves a "zombie page" open and the page redirection does not work, the click event is still registered (or rather that the overall JavaScript will continue to run, until of course a page redirection is triggered and an error page shows up) but the pageview event is not. It is decided that this won't be fixed, as the log, although confusing, is actually meaningful for diagnostics.
 
 ## Debugging Instruction
 
 - **Checking Local Storage Structure:** Use the browser's developer tool. If there is a console run `JSON.parse(localStorage.getItem("activity-tracker-data"))`. If console method does not work, go to Application tab (Chrome) or Storage tab (Firefox) in the developer tools panel. Note: The `__proto__` folders sometimes seen during this debugging isn't a bug due to the code, it is just how the browser developer tools display the javascript objects.
 
 - **Running The Script:** In VS Code, right click the `index.html` in the demo folder and use the Live Preview or Live Server function to start a server, copy and paste the URL into the desired web browser. This prevents the CORS issues.
+
+    - **Note:** Most of the functionalities can be tested inside the VS Code preview window, however the VS Code built-in browser seems to be more restrictive and can cause issues, so copy-pasting the URL into a proper browser is recommended.
