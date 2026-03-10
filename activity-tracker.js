@@ -294,11 +294,15 @@ class ActivityTracker {
         this.exportThenClearBtn = this._createHTMLElementWithAttr("button", "widget-btn", "Export & Clear");
 
         this.panel.appendChild(this.statsEl);
-        this.panel.appendChild(this.sessionIdEl);
-        this.panel.appendChild(this.timelineEl);
         this.panel.appendChild(this.clearBtn);
         this.panel.appendChild(this.exportBtn);
         this.panel.appendChild(this.exportThenClearBtn);
+        this.panel.appendChild(this.sessionIdEl);
+
+        this.divider = this._createHTMLElementWithAttr("hr", "widget-divider");
+        this.panel.appendChild(this.divider);
+
+        this.panel.appendChild(this.timelineEl);
 
 
         container.appendChild(this.panel);

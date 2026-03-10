@@ -106,9 +106,16 @@
 /* Modify this to change the styling of session ID styling */
 .widget-session-id {
     font-size: 11px;
+    padding: 10px 0;
     color: var(--color-text);
-    margin: 0 0 10px;
+    margin: 0 0 1px;
     word-break: break-all;
+}
+
+/* ======= Widget Divider ======= */
+.widget-divider {
+    border: 1px solid var(--color-border);
+    margin: 0 0 10px;
 }
 
 /* ======= Recorded Events Timeline ======= */
@@ -125,8 +132,8 @@
 .widget-event {
     position: relative;
     color: var(--color-event-text);
-    padding: 6px 10px 6px 18px;
-    margin-bottom: 4px;
+    padding: 3px 10px 3px 18px;
+    margin-bottom: 1px;
     font-size: 12px;
     line-height: 1.4;
 }
