@@ -31,3 +31,5 @@ Below are the list of bugs with the discovery dates, and status of whether they 
 - **Running The Script:** In VS Code, right click the `index.html` in the demo folder and use the Live Preview or Live Server function to start a server, copy and paste the URL into the desired web browser. This prevents the CORS issues.
 
     - **Note:** Most of the functionalities can be tested inside the VS Code preview window, however the VS Code built-in browser seems to be more restrictive and can cause issues, so copy-pasting the URL into a proper browser is recommended.
+
+- **Debug Logging:** In the top of the activity tracker definition inside `activity-tracker.js`, change the line `this.DEBUG = false` inside the constructor to be `this.DEBUG = true` to turn on **all** available debug logs. If granular debugging is preferred, locate the specific methods and set their `logging` parameter to true manually. Technically since `this.DEBUG` is public there can be a UI control for it, but given the potential performance impact, it is only planned for future.
