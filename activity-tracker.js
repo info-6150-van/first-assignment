@@ -49,7 +49,7 @@ class ActivityTracker {
     // Function for loading from localStorage or create new session if none can be loaded //
     _load(logging = this.DEBUG) {
         if (logging) {
-            console.log(`[DEBUG][${new Date().toISOString()}] Attempting Loading From Local Storage Or Creating New Session If Loading Fails`)
+            console.log(`[DEBUG][${new Date().toISOString()}] Attempting Loading From Local Storage Or Creating New Session If Loading Fails`);
         }
         try {
             const rawData = localStorage.getItem(this.storageKey);
@@ -66,7 +66,7 @@ class ActivityTracker {
             console.warn("Failed to load session data:", e);
         }
         if (logging) {
-            console.log(`[DEBUG][${new Date().toISOString()}] Finished Loading From Local Storage Or Creating New Session If Loading Fails`)
+            console.log(`[DEBUG][${new Date().toISOString()}] Finished Loading From Local Storage Or Creating New Session If Loading Fails`);
         }
         return {
             sessionId: this._generateSessionId(),
@@ -78,12 +78,12 @@ class ActivityTracker {
     // Function for saving to localStorage //
     _save(logging = this.DEBUG) {
         if (logging) {
-            console.log(`[DEBUG][${new Date().toISOString()}] Attempting Saving to Local Storage`)
+            console.log(`[DEBUG][${new Date().toISOString()}] Attempting Saving to Local Storage`);
         }
         try {
             localStorage.setItem(this.storageKey, JSON.stringify(this.data));
             if (logging) {
-                console.log(`[DEBUG][${new Date().toISOString()}] Finished Saving to Local Storage`)
+                console.log(`[DEBUG][${new Date().toISOString()}] Finished Saving to Local Storage`);
             }
         } catch (e) {
             console.warn("Failed to save session data:", e);
@@ -148,7 +148,7 @@ class ActivityTracker {
     // Used to avoid the usage of innerHTML //
     _createHTMLElementWithAttr(tag, className, textContent, logging = this.DEBUG) {
         if (logging) {
-            console.log(`[DEBUG][${new Date().toISOString()}] Attempting Creating HTML Element with tag:${tag}, className:${className}, textContent:${textContent}`)
+            console.log(`[DEBUG][${new Date().toISOString()}] Attempting Creating HTML Element with tag:${tag}, className:${className}, textContent:${textContent}`);
         }
         const newElement = document.createElement(tag);
         if (className) {
@@ -158,7 +158,7 @@ class ActivityTracker {
             newElement.textContent = textContent;
         }
         if (logging) {
-            console.log(`[DEBUG][${new Date().toISOString()}] Finished Creating HTML Element with tag:${tag}, className:${className}, textContent:${textContent}`)
+            console.log(`[DEBUG][${new Date().toISOString()}] Finished Creating HTML Element with tag:${tag}, className:${className}, textContent:${textContent}`);
         }
         return newElement;
         
@@ -214,7 +214,11 @@ class ActivityTracker {
     }
 
     // Function for rendering the widget //
-    _renderWidget() {
+    _renderWidget(logging = this.DEBUG) {
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Starting (Re)Rendering of Widget`);
+        }
+
         const stats = this.generateStatistics();
 
         // Stats //
@@ -246,6 +250,10 @@ class ActivityTracker {
         }
         this.timelineEl.textContent = "";
         this.timelineEl.appendChild(frag);
+
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Finished (Re)Rendering of Widget`);
+        }
     }
 
     // Function for recording an event then saving and triggering render //
@@ -253,7 +261,7 @@ class ActivityTracker {
         const evt = { type, time: Date.now(), ...details };
         this.data.events.push(evt);
         if (logging) {
-            console.log(`[DEBUG][${new Date().toISOString()}] Recorded Event of type ${type}`)
+            console.log(`[DEBUG][${new Date().toISOString()}] Recorded Event of type ${type}`);
         }
         this._incrementCount(type);
         this._debouncedSave();
@@ -356,7 +364,12 @@ class ActivityTracker {
     // Function for building the widget that displays the session info //
     // Heavily uses the _createHTMLElementWithAttr function to avoid innerHTML //
     // Also has parts relevant to persistent panel toggle state and duplicates removal //
-    _buildWidget() {
+    _buildWidget(logging = this.DEBUG) {
+
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Starting Building Widget`);
+        }
+
         // Remove any existing widget //
         const existingInstance = document.querySelector(".widget-baseline");
         if (existingInstance) {
@@ -413,17 +426,31 @@ class ActivityTracker {
         this.clearBtn.addEventListener("click", () => this.clearSession());
         this.exportBtn.addEventListener("click", () => this.exportToJSON());
         this.exportThenClearBtn.addEventListener("click", () => this.exportThenClear());
+
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Finished Building Widget`);
+        }
     }
 
     // Function for removing external debug control panels that conflict with the built-in widget //
     // Needed for product1.html since it defines its own session stat debug panel //
     // Bit of a dirty fix but this is the cleanest method without changing the demo file or re-writing the code //
-    _removeExternalDebugControls() {
+    _removeExternalDebugControls(logging = this.DEBUG) {
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Attempting Removing External Debug Panel`);
+        }
+
         const observer = new MutationObserver(() => {
             const debugEl = document.querySelector(".debug-controls");
             if (debugEl) {
+                if (logging) {
+                    console.log(`[DEBUG][${new Date().toISOString()}] External Debug Panel Detected`);
+                }
                 debugEl.remove();
                 observer.disconnect();
+                if (logging) {
+                    console.log(`[DEBUG][${new Date().toISOString()}] External Debug Panel Removed`);
+                }
             }
         });
         observer.observe(document.body, { childList: true, subtree: true });
@@ -431,13 +458,30 @@ class ActivityTracker {
         // Also remove immediately if it already exists //
         const existing = document.querySelector(".debug-controls");
         if (existing) {
+            if (logging) {
+                console.log(`[DEBUG][${new Date().toISOString()}] External Debug Panel Detected`);
+            }
             existing.remove();
             observer.disconnect();
+            if (logging) {
+                console.log(`[DEBUG][${new Date().toISOString()}] External Debug Panel Removed`);
+            }
+        }
+
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Finished Pipeline Removing External Debug Panel`);
         }
     }
 
     // Function for attaching event listeners, with event delegation to optimize performance //
-    _attachListeners() {
+    _attachListeners(logging = this.DEBUG) {
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Starting Attaching Event Listeners`);
+        }
+
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Starting Attaching Event Listeners To Clicks`);
+        }
         document.addEventListener("click", (e) => {
             const el = e.target;
             if (el.closest(".widget-baseline")) {
@@ -452,7 +496,13 @@ class ActivityTracker {
             const desc = `<${tag}${id || cls}>${(el.textContent || "").substring(0, 30).trim()}`;
             this._recordEvent("click", { details: desc });
         }, true);
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Finished Attaching Event Listeners To Clicks`);
+        }
 
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Starting Attaching Event Listeners To Form Submissions`);
+        }
         document.addEventListener("submit", (e) => {
             const form = e.target;
             const id = form.id ? `#${form.id}` : "";
@@ -460,6 +510,9 @@ class ActivityTracker {
             const desc = id || name || "anonymous form";
             this._recordEvent("formsubmit", { details: desc });
         }, true);
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Finished Attaching Event Listeners To Form Submissions`);
+        }
 
         // Force a save upon unloading to make sure pending changes are saved //
         window.addEventListener("beforeunload", () => {
@@ -476,6 +529,10 @@ class ActivityTracker {
                 }
             }
         }, 1000);
+
+        if (logging) {
+            console.log(`[DEBUG][${new Date().toISOString()}] Finished Attaching Event Listeners`);
+        }
     }
 }
 
