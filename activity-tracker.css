@@ -1,1 +1,248 @@
-/* Implement your styles here */
+/* ======= CSS Custom Properties======= */
+/* Used as central control for colors */
+/* Does not control the notification pop-up, that is supposed to be kept consistent with original html implementation */
+:root {
+  --color-bg: #333333;
+  --color-bg-highlight: #555555;
+  --color-border: #d8d8d8;
+  --color-text: #d8d8d8;
+  --color-timeline-line:#d8d8d8;
+  --color-eventtext-unknown: #d8d8d8;
+  --color-eventtext-pageview: #5695e8;
+  --color-eventtext-click: #e07b39;
+  --color-eventtext-form: #5cb85c;
+  --color-eventblob-unknown: #d8d8d8;
+  --color-eventblob-pageview: #5695e8;
+  --color-eventblob-click: #e07b39;
+  --color-eventblob-form: #5cb85c;
+}
+
+/* ======= Widget Baseline Style ======= */
+
+/* Modify this to change the styling of the baseline widget */
+/* Mainly used to adjust the overall spacing and overlapping behavior */
+/* Be careful about changing color or fonts styling here as they could be overwritten by later CSS */
+.widget-baseline {
+    position: fixed;
+    bottom: 20px;
+    left: 10px;
+    z-index: 1000;
+    font-size: 14px;
+    color: var(--color-bg);
+    max-width: 400px;
+    width: 100%;
+}
+
+/* ======= Widget Toggle Button ======= */
+
+/* Modify this to change the styling of the widget panel toggle button */
+.widget-toggle-btn {
+    display: block;
+    padding: 8px 14px;
+    background: var(--color-bg);
+    color: var(--color-text);
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    text-align: left;
+    width: auto;
+}
+
+.widget-toggle-btn:hover {
+    background: var(--color-bg-highlight);
+}
+
+/* Modify this to change the styling of the main label text inside the toggle button */
+.widget-toggle-btn-label {
+    display: block;
+}
+
+/* Modify this to change the styling of the inline stats summary shown when the panel is closed */
+.widget-toggle-btn-stats {
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--color-text);
+    margin-top: 3px;
+    opacity: 0.85;
+}
+
+/* ======= Widget Main Panel ======= */
+
+/* Modify this to change the styling of the widget expanded panel */
+.widget-panel {
+    margin-top: 6px;
+    background: var(--color-bg);
+    border-radius: 8px;
+    padding: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.widget-hidden {
+    display: none;
+}
+
+/* ======= Session Stats FlexBox + Display ======= */
+
+/* Modify this to change the flexbox alignments */
+.widget-stats-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+/* Modify this to change the styling of ALL stats summary displays within the widget */
+.widget-stat {
+    background: var(--color-bg);
+    color: var(--color-text);
+    padding: 4px 8px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ======= Session ID ======= */
+
+/* Modify this to change the styling of session ID styling */
+.widget-session-id {
+    font-size: 11px;
+    padding: 10px 0;
+    color: var(--color-text);
+    margin: 0 0 1px;
+    word-break: break-all;
+}
+
+/* ======= Widget Divider ======= */
+.widget-divider {
+    border: 1px solid var(--color-border);
+    margin: 0 0 10px;
+}
+
+/* ======= Recorded Events Timeline ======= */
+
+/* Modify this to change the styling of the timeline lines */
+.widget-timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 2px double var(--color-timeline-line);
+}
+
+/* Modify this to change the styling of main event texts */
+.widget-event {
+    position: relative;
+    color: var(--color-eventtext-unknown);
+    padding: 3px 10px 3px 18px;
+    margin-bottom: 1px;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* Modify this to change the baseline styling of the timeline nodes */
+/* The background color here is for event types that do not belong to planned categories */
+.widget-event::before {
+    content: "";
+    position: absolute;
+    left: -5px;
+    top: 10px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-eventblob-unknown);
+}
+
+/* Modify this to change the color of the timeline nodes regarding pageview events */
+.widget-event--pageview::before {
+    background: var(--color-eventblob-pageview);
+}
+
+/* Modify this to change the color of the timeline nodes regarding click events */
+.widget-event--click::before {
+    background: var(--color-eventblob-click);
+}
+
+/* Modify this to change the color of the timeline nodes regarding form submission events */
+.widget-event--formsubmit::before {
+    background: var(--color-eventblob-form);
+}
+
+/* Modify this to change the styling of the timeline text regarding pageview events */
+.widget-event--pageview {
+    color: var(--color-eventtext-pageview);
+}
+
+/* Modify this to change the styling of the timeline text regarding click events */
+.widget-event--click {
+    color: var(--color-eventtext-click);
+}
+
+/* Modify this to change the styling of the timeline text regarding form submission events */
+.widget-event--formsubmit {
+    color: var(--color-eventtext-form);
+}
+
+/* Modify this to change the styling of main event texts (currently only handles the spacing, font boldness and captilization) */
+.widget-event-type {
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-right: 6px;
+}
+
+/* Modify this to change the styling of event detail texts (ie which element clicked inside which html) */
+.widget-event-detail {
+    color: var(--color-text);
+    margin-right: 6px;
+}
+
+/* Modify this to change the styling of event time texts */
+.widget-event-time {
+    color: var(--color-text);
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+/* ======= Unified Widget Button ======= */
+
+/* Modify this to change the styling of ALL buttons within the widget */
+.widget-btn {
+    margin-top: 8px;
+    padding: 4px 10px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    color: var(--color-text);
+    font-size: 12px;
+}
+
+/* Modify this to change the on hover styling of ALL buttons within the widget */
+.widget-btn:hover {
+    background: var(--color-bg-highlight);
+}
+
+/* ======= Notification Pop-up Taken From product1.html ======= */
+/* Original styling is inside the styles.css in demo folder */
+/* Duplicates here so that the styling is confined to the activity tracker only */
+/* Only changed the z-index from 1100 to 900 so it doesn't overlap the widget, otherwise the same */
+
+.widget-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #007bff;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 900;
+}
+
+.widget-notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
