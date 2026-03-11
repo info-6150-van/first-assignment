@@ -116,12 +116,9 @@ class ActivityTracker {
     // Function for a debounced save with delay to optimize performance //
     // used to mitigate issues with rapid clicks causing saving lags //
     // although this is not directly observed on my machine //
-    _debouncedSave(logging = this.DEBUG) {
+    _debouncedSave() {
         clearTimeout(this._saveTimer);
         this._saveTimer = setTimeout(() => this._save(), 500);
-        if (logging) {
-            console.log(`[DEBUG][${new Date().toISOString()}] Scheduled Debounced Session Data Saving`);
-        }
     }
 
     // Function for getting the current page name //
@@ -151,19 +148,13 @@ class ActivityTracker {
 
     // Function for creating the html element with given tag, classname, and text content //
     // Used to avoid the usage of innerHTML //
-    _createHTMLElementWithAttr(tag, className, textContent, logging = this.DEBUG) {
-        if (logging) {
-            console.log(`[DEBUG][${new Date().toISOString()}] Attempting Creating HTML Element with tag:${tag}, className:${className}, textContent:${textContent}`);
-        }
+    _createHTMLElementWithAttr(tag, className, textContent) {
         const newElement = document.createElement(tag);
         if (className) {
             newElement.className = className;
         }
         if (textContent != null) {
             newElement.textContent = textContent;
-        }
-        if (logging) {
-            console.log(`[DEBUG][${new Date().toISOString()}] Finished Creating HTML Element with tag:${tag}, className:${className}, textContent:${textContent}`);
         }
         return newElement;
         
