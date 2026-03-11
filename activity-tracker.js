@@ -592,13 +592,18 @@ class ActivityTracker {
         // Storage listener to hopefully mitigate some save race conditions //
         // Listens to stored value changes, merge events that are not in storage and resort, then force a event count rebuild and re-render //
         window.addEventListener("storage", (e) => {
-            if (e.key === this.storageKey && e.newValue) {
+            if (e.key === this.storageKey) {
+                if (!e.newValue) {
+                    return;
+                }
+
                 try {
                     const updated = JSON.parse(e.newValue);
+
                     if (updated.sessionId === this.data.sessionId) {
                         // Merge in any events that are not in storage currently //
                         // based on unique id just like _save //
-                        const existingUids = new Set(this.data.events.map(e => e.uid));
+                        const existingUids = new Set(this.data.events.map(ev => ev.uid));
                         let added = false;
                         for (const evt of updated.events) {
                             if (!existingUids.has(evt.uid)) {
@@ -611,13 +616,16 @@ class ActivityTracker {
                             this._rebuildCounts();
                             this._renderWidget();
                         }
-                    }
-                    else {
+                    } else {
                         // Different session ID means that another tab used the clear session function //
+                        // Cancel any pending debounced save so it doesn't //
+                        // overwrite the fresh session with old data //
+                        clearTimeout(this._saveTimer);
                         // Adopt the new session data entirely and re-render //
                         this.data = updated;
                         this._rebuildCounts();
                         this._renderWidget();
+                        this.showNotification("Session Reset From Another Tab");
                     }
                 } catch (err) {
                     console.warn("Failed to sync tab data:", err);

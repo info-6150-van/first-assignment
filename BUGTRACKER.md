@@ -30,6 +30,8 @@ Below are the list of bugs with the discovery dates, and status of whether they 
 
 - **2026-03-10 Major Bug - Debounced Save Can Be Lost On Rapid Unload (Fixed 2026-03-10):** While the beforeunload listener should act as a safety barrier and force a save before unloading, if the browser doesn't support it, or if the save function fails when the debounced save is running, then the data can be lost.
 
+- **2026-03-10 Major Bug - Pending Debounced Save Could Override Reset Widget Cross Tabs (Fixed 2026-03-10):** If one tab has a pending debounced save, while the other tab recently had a reset, the debounced save will still trigger causing old data to leak into the new clean timeline.
+
 ## Debugging Instruction
 
 - **Checking Local Storage Structure:** Use the browser's developer tool. If there is a console run `JSON.parse(localStorage.getItem("activity-tracker-data"))`. If console method does not work, go to Application tab (Chrome) or Storage tab (Firefox) in the developer tools panel. Note: The `__proto__` folders sometimes seen during this debugging isn't a bug due to the code, it is just how the browser developer tools display the javascript objects.

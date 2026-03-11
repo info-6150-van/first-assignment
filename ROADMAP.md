@@ -1,6 +1,6 @@
 # Activity Tracker Widget — Implementation Roadmap
 
-> **AI Disclosure:** This roadmap was created with the assistance of generative AI (Claude by Anthropic). The work may take inspiration from templates or examples that generative AI produced; however, all actual code will be written by myself in compliance with the course policies and in the spirit of transparency.
+> **AI Disclosure:** This roadmap was created with the assistance of generative AI (Claude by Anthropic). The work may take inspiration from templates, examples, or code snippets that generative AI produced; however, all finalized code will be transcribed and invigilated by myself in compliance with the course policies and in the spirit of transparency.
 
 ## Overview
 
