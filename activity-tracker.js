@@ -3,10 +3,18 @@ class ActivityTracker {
         // Set centralized debugging status //
         this.DEBUG = false;
 
+        // Set maximum event cap //
+        this.MAX_EVENTS = 500;
+
         // Prevent duplicate initialization; return existing instance //
         if (window._activityTrackerInstance) {
             return window._activityTrackerInstance;
         }
+        // Store instance for singleton pattern //
+        // This goes against the 'create new instance' pattern seen in product1.html //
+        // But this allows multiple pages to share the same instance //
+        // and prevents accidental instance duplications //
+        window._activityTrackerInstance = this;
 
         // Create storage keys //
         this.storageKey = "activity-tracker-data";
@@ -32,12 +40,6 @@ class ActivityTracker {
         // Remove any external debug controls that may conflict with the widget //
         // See the function comment for reasons //
         this._removeExternalDebugControls();
-
-        // Store instance for singleton pattern //
-        // This goes against the 'create new instance' pattern seen in product1.html //
-        // But this allows multiple pages to share the same instance //
-        // and prevents accidental instance duplications //
-        window._activityTrackerInstance = this;
     }
 
     // Function for generating session ID using current time //
@@ -267,6 +269,22 @@ class ActivityTracker {
         }
     }
 
+    // Function for checking if the event cap has been reached and prompting export then clear //
+    _checkEventCap(logging = this.DEBUG) {
+        if (this.data.events.length >= this.MAX_EVENTS) {
+            if (logging) {
+                console.log(`[DEBUG][${new Date().toISOString()}] Event cap of ${this.MAX_EVENTS} reached, prompting export then clear`);
+            }
+            const userChoice = window.confirm(
+                `Event cap of ${this.MAX_EVENTS} has been reached. Continuing adding events can increase the risk of data lossage due to limited storage quota. ` +
+                `Click OK to export session data and clear, or Cancel to dismiss.`
+            );
+            if (userChoice) {
+                this.exportThenClear(logging);
+            }
+        }
+    }
+
     // Function for recording an event then saving and triggering render //
     _recordEvent(type, details = {}, logging = this.DEBUG) {
         const evt = { type, time: Date.now(), ...details };
@@ -277,6 +295,7 @@ class ActivityTracker {
         this._incrementCount(type);
         this._debouncedSave();
         this._appendEventToTimeline(evt);
+        this._checkEventCap(logging);
     }
 
     // Function for toggling the session stats panel and saving the toggle states to local storage //
@@ -319,7 +338,7 @@ class ActivityTracker {
     // Function for clearing session stats when the clear button is clicked //
     clearSession(logging = this.DEBUG) {
         if (logging) {
-            console.log(`[DEBUG][${new Date().toISOString()}] Attempting to Clear Session Data`);
+            console.log(`[DEBUG][${new Date().toISOString()}] Clearing session data`);
         }
         localStorage.removeItem(this.storageKey);
         this.data = {
@@ -328,10 +347,13 @@ class ActivityTracker {
             events: []
         };
         this._eventCounts = { pages: 0, clicks: 0, forms: 0 };
-        this._recordEvent("pageview", { page: this._getPageName() });
+
+        const evt = { type: "pageview", time: Date.now(), page: this._getPageName() };
+        this.data.events.push(evt);
+        this._incrementCount("pageview");
         this._save();
         this._renderWidget();
-        this.showNotification('Data Cleared');
+        this.showNotification("Data Cleared");
         if (logging) {
             console.log(`[DEBUG][${new Date().toISOString()}] Cleared Session Data`);
         }
@@ -529,6 +551,11 @@ class ActivityTracker {
 
         // Force a save upon unloading to make sure pending changes are saved //
         window.addEventListener("beforeunload", () => {
+            clearTimeout(this._saveTimer);
+            this._save();
+        });
+
+        window.addEventListener("pagehide", () => {
             clearTimeout(this._saveTimer);
             this._save();
         });
