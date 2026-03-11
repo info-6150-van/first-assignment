@@ -48,6 +48,11 @@ class ActivityTracker {
         return `session_${timeStamp}`;
     }
 
+    // Function for generating unique id used for event tracking //
+    _generateEventUid() {
+        return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    }
+
     // Function for loading from localStorage or create new session if none can be loaded //
     _load(logging = this.DEBUG) {
         if (logging) {
@@ -161,7 +166,7 @@ class ActivityTracker {
         const evt = {
             type: "pageview",
             time: Date.now(),
-            uid: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            uid: this._generateEventUid(),
             page: this._getPageName()
         };
         this.data.events.push(evt);
@@ -305,7 +310,7 @@ class ActivityTracker {
         const evt = {
             type,
             time: Date.now(),
-            uid: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            uid: this._generateEventUid(),
             ...details
         };
         this.data.events.push(evt);
@@ -368,7 +373,12 @@ class ActivityTracker {
         };
         this._eventCounts = { pages: 0, clicks: 0, forms: 0 };
 
-        const evt = { type: "pageview", time: Date.now(), page: this._getPageName() };
+        const evt = {
+            type: "pageview",
+            time: Date.now(),
+            uid: this._generateEventUid(),
+            page: this._getPageName()
+        };
         this.data.events.push(evt);
         this._incrementCount("pageview");
         this._save();
