@@ -24,6 +24,12 @@ Below are the list of bugs with the discovery dates, and status of whether they 
 
 - **2026-03-09 Medium Bug - Click Log Entries When Page Fails (Won't Fix 2026-03-09):** Right now when the test server stops unexpectedly which leaves a "zombie page" open and the page redirection does not work, the click event is still registered (or rather that the overall JavaScript will continue to run, until of course a page redirection is triggered and an error page shows up) but the pageview event is not. It is decided that this won't be fixed, as the log, although confusing, is actually meaningful for diagnostics.
 
+- **2026-03-10 Major Bug - Multiple Tab Save Race Conditions (Fixed 2026-03-10):** Two tabs can overwrite each other's data due to the singleton architecture.
+
+- **2026-03-10 Major Bug - Back to Back Synchronous And Debounced Saves (Fixed 2026-03-10):** _recordInitialPageview does a synchronous save, then _buildWidget and _attachListeners run, and any click during widget building could call _recordEvent which then calls _debouncedSave. Since _debouncedSave only saves after the set timer, the in-memory this.data has the new event but localStorage doesn't yet. If the page unloads in that window and beforeunload doesn't fire, that event is lost.
+
+- **2026-03-10 Major Bug - Debounced Save Can Be Lost On Rapid Unload (Fixed 2026-03-10):** While the beforeunload listener should act as a safety barrier and force a save before unloading, if the browser doesn't support it, or if the save function fails when the debounced save is running, then the data can be lost.
+
 ## Debugging Instruction
 
 - **Checking Local Storage Structure:** Use the browser's developer tool. If there is a console run `JSON.parse(localStorage.getItem("activity-tracker-data"))`. If console method does not work, go to Application tab (Chrome) or Storage tab (Firefox) in the developer tools panel. Note: The `__proto__` folders sometimes seen during this debugging isn't a bug due to the code, it is just how the browser developer tools display the javascript objects.

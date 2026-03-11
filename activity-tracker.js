@@ -3,8 +3,8 @@ class ActivityTracker {
         // Set centralized debugging status //
         this.DEBUG = false;
 
-        // Set maximum event cap //
-        this.MAX_EVENTS = 500;
+        // Set maximum event cap (slightly lowered since the uid introduction just in case) //
+        this.MAX_EVENTS = 400;
 
         // Prevent duplicate initialization; return existing instance //
         if (window._activityTrackerInstance) {
@@ -83,6 +83,24 @@ class ActivityTracker {
             console.log(`[DEBUG][${new Date().toISOString()}] Attempting Saving to Local Storage`);
         }
         try {
+            // Read current storage to merge with any changes from other tabs
+            const rawData = localStorage.getItem(this.storageKey);
+            if (rawData) {
+                const stored = JSON.parse(rawData);
+                // If it's the same session, merge events by uid to avoid losing
+                // events written by another tab
+                if (stored.sessionId === this.data.sessionId) {
+                    const existingUids = new Set(this.data.events.map(e => e.uid));
+                    for (const evt of stored.events) {
+                        if (!existingUids.has(evt.uid)) {
+                            this.data.events.push(evt);
+                        }
+                    }
+                    // Sort by time to keep chronological order
+                    this.data.events.sort((a, b) => a.time - b.time);
+                    this._rebuildCounts();
+                }
+            }
             localStorage.setItem(this.storageKey, JSON.stringify(this.data));
             if (logging) {
                 console.log(`[DEBUG][${new Date().toISOString()}] Finished Saving to Local Storage`);
@@ -140,7 +158,12 @@ class ActivityTracker {
     // Function for recording the initial event without triggering render
     // Part of a fix to prevent premature rendering and double logging of page view events //
     _recordInitialPageview() {
-        const evt = { type: "pageview", time: Date.now(), page: this._getPageName() };
+        const evt = {
+            type: "pageview",
+            time: Date.now(),
+            uid: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            page: this._getPageName()
+        };
         this.data.events.push(evt);
         this._incrementCount("pageview");
         this._save();
@@ -278,7 +301,13 @@ class ActivityTracker {
 
     // Function for recording an event then saving and triggering render //
     _recordEvent(type, details = {}, logging = this.DEBUG) {
-        const evt = { type, time: Date.now(), ...details };
+        // Give the recorded event a unique id to avoid collisions during storage merging //
+        const evt = {
+            type,
+            time: Date.now(),
+            uid: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            ...details
+        };
         this.data.events.push(evt);
         if (logging) {
             console.log(`[DEBUG][${new Date().toISOString()}] Recorded Event of type ${type}`);
@@ -430,8 +459,7 @@ class ActivityTracker {
 
         this.statsEl = this._createHTMLElementWithAttr("div", "widget-stats-flex");
         this.sessionIdEl = this._createHTMLElementWithAttr("p", "widget-session-id");
-        this.timelineEl = document.createElement("ul");
-        this.timelineEl.className = "widget-timeline";
+        this.timelineEl = this._createHTMLElementWithAttr("ul", "widget-timeline");
         this.clearBtn = this._createHTMLElementWithAttr("button", "widget-btn", "Clear Data");
         this.exportBtn = this._createHTMLElementWithAttr("button", "widget-btn", "Export JSON");
         this.exportThenClearBtn = this._createHTMLElementWithAttr("button", "widget-btn", "Export & Clear");
@@ -494,7 +522,7 @@ class ActivityTracker {
         });
         observer.observe(document.body, { childList: true, subtree: true });
 
-        // Give up after 5000 miliseconds
+        // Give up after 5000 miliseconds //
         setTimeout(() => observer.disconnect(), 5000);
     }
 
@@ -549,6 +577,42 @@ class ActivityTracker {
         window.addEventListener("pagehide", () => {
             clearTimeout(this._saveTimer);
             this._save();
+        });
+
+        // Storage listener to hopefully mitigate some save race conditions //
+        // Listens to stored value changes, merge events that are not in storage and resort, then force a event count rebuild and re-render //
+        window.addEventListener("storage", (e) => {
+            if (e.key === this.storageKey && e.newValue) {
+                try {
+                    const updated = JSON.parse(e.newValue);
+                    if (updated.sessionId === this.data.sessionId) {
+                        // Merge in any events that are not in storage currently //
+                        // based on unique id just like _save //
+                        const existingUids = new Set(this.data.events.map(e => e.uid));
+                        let added = false;
+                        for (const evt of updated.events) {
+                            if (!existingUids.has(evt.uid)) {
+                                this.data.events.push(evt);
+                                added = true;
+                            }
+                        }
+                        if (added) {
+                            this.data.events.sort((a, b) => a.time - b.time);
+                            this._rebuildCounts();
+                            this._renderWidget();
+                        }
+                    }
+                    else {
+                        // Different session ID means that another tab used the clear session function //
+                        // Adopt the new session data entirely and re-render //
+                        this.data = updated;
+                        this._rebuildCounts();
+                        this._renderWidget();
+                    }
+                } catch (err) {
+                    console.warn("Failed to sync tab data:", err);
+                }
+            }
         });
 
         this._durationInterval = setInterval(() => {
