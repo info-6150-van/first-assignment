@@ -1,4 +1,4 @@
-# Activity Tracker Widget
+# Activity Tracker Widget - Modified to exemplify Git
 
 ## Overview
 
