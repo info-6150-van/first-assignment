@@ -1,4 +1,4 @@
-# Activity Tracker Widget
+# Activity Tracker Widget - Changed Locally
 
 ## Overview
 
